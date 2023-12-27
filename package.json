@@ -1,5 +1,5 @@
 {
-  "name": "storagebox",
+  "name": "@litehex/storage-box",
   "version": "0.1.0-canary.0",
   "description": "A memory-based key–value storage for Browser and Node.js",
   "main": "dist/index.js",
@@ -30,6 +30,9 @@
     "prepublishOnly": "pnpm run test && pnpm run format:check && pnpm run typecheck && pnpm run build"
   },
   "packageManager": "pnpm@8.12.0",
+  "dependencies": {
+    "type-fest": "^4.8.3"
+  },
   "devDependencies": {
     "@types/chai": "^4.3.11",
     "@types/mocha": "^10.0.6",
@@ -50,7 +53,12 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {
-    "type-fest": "^4.8.3"
-  }
+  "keywords": [
+    "storage",
+    "key-value",
+    "memory",
+    "browser",
+    "nodejs",
+    "litehex"
+  ]
 }
