@@ -1,7 +1,7 @@
 {
   "name": "storagebox",
   "version": "0.1.0-canary.0",
-  "description": "A memory-based key–value storage with fancy utils for Node.js",
+  "description": "A memory-based key–value storage for Browser and Node.js",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -23,6 +23,7 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
+    "test": "mocha --recursive \"**/*.test.ts\"",
     "typecheck": "tsc --noEmit",
     "format:check": "prettier --check \"**/*.{ts,md}\"",
     "format": "prettier --write .",
@@ -48,5 +49,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "type-fest": "^4.8.3"
   }
 }
