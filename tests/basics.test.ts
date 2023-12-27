@@ -1,4 +1,4 @@
-import Client from '@/index.ts';
+import { Client } from '@/index.ts';
 import { expect } from 'chai';
 
 describe('In-memory basic usage', () => {

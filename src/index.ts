@@ -1,6 +1,6 @@
-import type { JsonArray, JsonValue } from 'type-fest';
+import MemoryDrive from '@/driver/memory.ts';
 import type { IStorageBox, IStorageDrive } from '@/typings.ts';
-import MemoryDrive from '@/drives/memory.ts';
+import type { JsonArray, JsonValue } from 'type-fest';
 
 export class Client implements IStorageBox {
   private _drive: IStorageDrive;
@@ -156,4 +156,4 @@ export class Client implements IStorageBox {
   }
 }
 
-export default Client;
+export * from '@/typings.ts';

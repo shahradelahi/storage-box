@@ -29,3 +29,8 @@ export interface IStorageDrive {
   keys(): string[];
   clear(): void;
 }
+
+export interface IStorageParser {
+  stringify(value: any): string;
+  parse(value: any): Map<string, JsonValue>;
+}

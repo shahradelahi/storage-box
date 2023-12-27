@@ -1,11 +1,16 @@
+import { JsonMap } from '@/parser';
 import type { IStorageDrive } from '@/typings.ts';
 import type { JsonValue } from 'type-fest';
 
 export default class MemoryDrive implements IStorageDrive {
-  private _storage: Map<string, JsonValue>;
+  protected _storage: Map<string, JsonValue>;
 
-  constructor() {
-    this._storage = new Map();
+  constructor(storage?: Map<string, JsonValue>) {
+    if (storage) {
+      this._storage = JsonMap.parse(storage);
+    } else {
+      this._storage = new Map();
+    }
   }
 
   get(key: string): JsonValue | undefined {

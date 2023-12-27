@@ -1,6 +1,6 @@
 {
   "name": "@litehex/storage-box",
-  "version": "0.1.0-canary.0",
+  "version": "0.1.0-canary.2",
   "description": "A memory-based key–value storage for Browser and Node.js",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -18,6 +18,26 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./driver": {
+      "import": {
+        "types": "./dist/driver/index.d.mts",
+        "default": "./dist/driver/index.mjs"
+      },
+      "require": {
+        "types": "./dist/drivers/index.d.ts",
+        "default": "./dist/drivers/index.js"
+      }
+    },
+    "./parser": {
+      "import": {
+        "types": "./dist/parser/index.d.mts",
+        "default": "./dist/parser/index.mjs"
+      },
+      "require": {
+        "types": "./dist/parser/index.d.ts",
+        "default": "./dist/parser/index.js"
+      }
     }
   },
   "scripts": {
@@ -31,6 +51,7 @@
   },
   "packageManager": "pnpm@8.12.0",
   "dependencies": {
+    "debounce": "^2.0.0",
     "type-fest": "^4.8.3"
   },
   "devDependencies": {
