@@ -69,3 +69,46 @@ describe('In-memory basic usage', () => {
     expect(client.lrange('foo', 0, 2)).to.have.members(['foo', 'bar']);
   });
 });
+
+describe('In-memory with expiration', () => {
+  const client = new Client();
+
+  beforeEach(() => {
+    client.clear();
+  });
+
+  it('Set and get', async () => {
+    client.setex('foo', 'bar', 1);
+    expect(client.get('foo')).to.equal('bar');
+    await sleep(1100);
+    expect(client.get('foo')).to.be.undefined;
+  });
+
+  it('List set and get', async () => {
+    client.lpush('foo', 'bar');
+    client.lpush('foo', 'foo');
+    client.lpush('foo', 'baz');
+    client.lsetex('foo', 1, 'bar', 1);
+    expect(client.lget('foo', 1)).to.equal('bar');
+    await sleep(1100);
+    expect(client.lget('foo', 1)).to.be.undefined;
+  });
+
+  it('Get TTL', async () => {
+    client.setex('foo', 'bar', 2);
+    expect(client.ttl('foo')).to.be.greaterThanOrEqual(0);
+    await sleep(2100);
+    expect(client.ttl('foo')).to.equal(-1);
+  });
+
+  it('Get TTL in milliseconds', async () => {
+    client.setex('foo', 'bar', 2);
+    expect(client.ttl('foo', true)).to.be.greaterThanOrEqual(1000);
+    await sleep(2100);
+    expect(client.ttl('foo', true)).to.equal(-1);
+  });
+});
+
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

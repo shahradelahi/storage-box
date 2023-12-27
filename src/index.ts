@@ -4,6 +4,7 @@ import MemoryDrive from '@/drives/memory.ts';
 
 export class Client implements IStorageBox {
   private _drive: IStorageDrive;
+  private _ttl: Map<string, number> = new Map();
 
   constructor(storage?: IStorageDrive) {
     this._drive = storage || new MemoryDrive();
@@ -90,6 +91,68 @@ export class Client implements IStorageBox {
   lrange(key: string, start: number, stop: number): JsonValue[] {
     const list = this._get_list(key);
     return list.slice(start, stop);
+  }
+
+  /**
+   * Delete a key after a certain time.
+   *
+   * @param key
+   * @param value
+   * @param seconds
+   */
+  setex(key: string, value: JsonValue, seconds: number) {
+    this._drive.set(key, value);
+    const secs = seconds * 1000;
+    const delAt = Date.now() + secs;
+    setTimeout(() => {
+      this._drive.del(key);
+      this._ttl.delete(key);
+    }, secs);
+    this._ttl.set(key, delAt);
+  }
+
+  /**
+   * Set list item with expiration time. The item in the list will be deleted after the expiration time.
+   *
+   * @param key
+   * @param index
+   * @param value
+   * @param seconds
+   */
+  lsetex(key: string, index: number, value: any, seconds: number) {
+    const list = this._get_list(key);
+    list[index] = value;
+    this._drive.set(key, list);
+    const secs = seconds * 1000;
+    const delAt = Date.now() + secs;
+    setTimeout(() => {
+      this.lset(key, index, undefined);
+      this._ttl.delete(key);
+    }, seconds * 1000);
+    this._ttl.set(key, delAt);
+  }
+
+  /**
+   * Get the remaining time to live in seconds.
+   *
+   * @param key
+   * @param milliseconds If true, returns the remaining time in milliseconds.
+   * @return {number} -1 if the key does not exist or does not have a timeout.
+   */
+  ttl(key: string, milliseconds?: boolean): number {
+    const delAt = this._ttl.get(key);
+    if (!delAt) {
+      return -1;
+    }
+    const now = Date.now();
+    const ttl = delAt - now;
+    if (ttl < 0) {
+      return -1;
+    }
+    if (milliseconds) {
+      return ttl;
+    }
+    return Math.floor(ttl / 1000);
   }
 }
 

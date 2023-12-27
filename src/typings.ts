@@ -14,6 +14,9 @@ export interface IStorageBox {
   lclear(key: string): void;
   lrange(key: string, start: number, stop: number): JsonArray;
   exists(key: string): boolean;
+  setex(key: string, value: JsonValue, seconds: number): void;
+  lsetex(key: string, index: number, value: any, seconds: number): void;
+  ttl(key: string): number;
   keys(): string[];
   clear(): void;
 }

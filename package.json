@@ -27,7 +27,7 @@
     "typecheck": "tsc --noEmit",
     "format:check": "prettier --check \"**/*.{ts,md}\"",
     "format": "prettier --write .",
-    "prepublishOnly": "pnpm run format:check && pnpm run typecheck && pnpm run build"
+    "prepublishOnly": "pnpm run test && pnpm run format:check && pnpm run typecheck && pnpm run build"
   },
   "packageManager": "pnpm@8.12.0",
   "devDependencies": {
