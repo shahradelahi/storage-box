@@ -49,7 +49,7 @@
     "format": "prettier --write .",
     "prepublishOnly": "pnpm run test && pnpm run format:check && pnpm run typecheck && pnpm run build"
   },
-  "packageManager": "pnpm@8.12.0",
+  "packageManager": "pnpm@8.15.1",
   "dependencies": {
     "debounce": "^2.0.0",
     "type-fest": "^4.8.3"
