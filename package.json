@@ -54,10 +54,10 @@
     "dev": "tsup --watch",
     "build": "tsup",
     "test": "mocha --recursive \"**/*.test.ts\"",
-    "typecheck": "tsc --noEmit",
+    "type-check": "tsc --noEmit",
     "format:check": "prettier --check \"**/*.{ts,md}\"",
     "format": "prettier --write .",
-    "prepublishOnly": "pnpm run test && pnpm run format:check && pnpm run typecheck && pnpm run build"
+    "prepublishOnly": "pnpm test && pnpm run format:check && pnpm run type-check && pnpm build"
   },
   "packageManager": "pnpm@8.15.1",
   "dependencies": {

@@ -1,0 +1,46 @@
+name: Release Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - run: pnpm install --frozen-lockfile
+      - run: npm run build
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org/
+
+      - run: |
+          if grep -q '"version": "${{ github.event.release.tag_name }}"' package.json; then
+            echo "Version already set to ${{ github.event.release.tag_name }}"
+          else
+            echo "Setting version to ${{ github.event.release.tag_name }}"
+            npm version ${{ github.event.release.tag_name }} --no-git-tag-version
+          fi
+
+      - run: pnpm install --frozen-lockfile
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
