@@ -2,9 +2,12 @@ import FsDrive from '@/driver/fs.ts';
 import { Client } from '@/index.ts';
 import { expect } from 'chai';
 import fs from 'fs';
+import { resolve } from 'path';
 
 describe('fs-based storage', () => {
-  using drive = new FsDrive('./tests/test.json');
+  const filePath = resolve(process.cwd(), 'tests', 'test.json');
+
+  using drive = new FsDrive(filePath);
   const client = new Client(drive);
 
   beforeEach(() => {
@@ -12,7 +15,7 @@ describe('fs-based storage', () => {
   });
 
   after(() => {
-    fs.unlinkSync('./tests/test.json');
+    fs.unlinkSync(filePath);
   });
 
   it('Set and get', () => {
