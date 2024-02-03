@@ -29,6 +29,16 @@
         "default": "./dist/drivers/index.js"
       }
     },
+    "./broswer": {
+      "import": {
+        "types": "./dist/driver/broswer.d.mts",
+        "default": "./dist/driver/broswer.mjs"
+      },
+      "require": {
+        "types": "./dist/drivers/broswer.d.ts",
+        "default": "./dist/drivers/broswer.js"
+      }
+    },
     "./parser": {
       "import": {
         "types": "./dist/parser/index.d.mts",

@@ -34,3 +34,10 @@ export interface IStorageParser {
   stringify(value: any): string;
   parse(value: any): Map<string, JsonValue>;
 }
+
+export type CommonDriverOptions = {
+  // Parser to use for serializing and deserializing data. Defaults to JSON.
+  parser?: IStorageParser;
+  // Bounce time for debouncing write operations
+  debounceTime?: number;
+};
