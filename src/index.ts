@@ -28,12 +28,12 @@ export class Client implements IStorageBox {
     this._load_ttl();
   }
 
-  get(key: string): JsonValue | undefined {
+  get(key: string): JsonValue | null {
     const ttl = this._ttl.get(key);
 
     // Return if ttl is not set or not expired
     if (!ttl || ttl.dat > Date.now()) {
-      return this._drive.get(key);
+      return this._drive.get(key) ?? null;
     }
 
     if (ttl.type === 'key') {
@@ -45,10 +45,10 @@ export class Client implements IStorageBox {
       this._ttl.delete(key);
     }
 
-    return undefined;
+    return null;
   }
 
-  set(key: string, value: JsonValue): void {
+  set(key: string, value: JsonValue | null): void {
     this._drive.set(key, value);
   }
 
@@ -85,13 +85,13 @@ export class Client implements IStorageBox {
     return this._get_list(key);
   }
 
-  lset(key: string, index: number, value: any): void {
+  lset(key: string, index: number, value: JsonValue | null): void {
     const list = this._get_list(key);
     list[index] = value;
     this._drive.set(key, list);
   }
 
-  lget(key: string, index: number): JsonValue | undefined {
+  lget(key: string, index: number): JsonValue | null {
     const ttl = this._ttl.get(key);
 
     if (!ttl || ttl.dat > Date.now()) {
@@ -100,7 +100,7 @@ export class Client implements IStorageBox {
     }
 
     if (ttl.type === 'list') {
-      this.lset(key, ttl.index, undefined);
+      this.lset(key, ttl.index, null);
     }
 
     if (ttl.type === 'key') {
@@ -108,7 +108,7 @@ export class Client implements IStorageBox {
       this._ttl.delete(key);
     }
 
-    return undefined;
+    return null;
   }
 
   ldel(key: string, index: number): void {
@@ -194,7 +194,7 @@ export class Client implements IStorageBox {
   private _create_ldel_timout(key: string, index: number, dat: number): void {
     const timeLeft = dat - Date.now();
     setTimeout(() => {
-      this.lset(key, index, undefined);
+      this.lset(key, index, null);
       this._ttl.delete(key);
     }, timeLeft);
 

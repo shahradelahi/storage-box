@@ -1,12 +1,13 @@
 import type { JsonArray, JsonValue } from 'type-fest';
+import { JsonPrimitive } from 'type-fest/source/basic';
 
 export interface IStorageBox {
-  get(key: string): JsonValue | undefined;
-  set(key: string, value: JsonValue): void;
+  get(key: string): JsonValue | null;
+  set(key: string, value: JsonValue | null): void;
   del(key: string): void;
   list(key: string): JsonArray;
-  lset(key: string, index: number, value: any): void;
-  lget(key: string, index: number): JsonValue | undefined;
+  lset(key: string, index: number, value: JsonValue | null): void;
+  lget(key: string, index: number): JsonValue | null;
   ldel(key: string, index: number): void;
   lpush(key: string, value: JsonValue): void;
   lpop(key: string): JsonValue | undefined;
@@ -41,3 +42,7 @@ export type CommonDriverOptions = {
   // Bounce time for debouncing write operations
   debounceTime?: number;
 };
+
+export type StorageType = 'local' | 'session';
+
+export type { JsonArray, JsonPrimitive, JsonValue };

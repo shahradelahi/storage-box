@@ -1,10 +1,8 @@
 /**
  * This is a browser storage driver for accessing the browser's local/session storage.
  */
-import type { IStorageDrive } from '@/typings.ts';
+import type { IStorageDrive, StorageType } from '@/typings.ts';
 import type { JsonValue } from 'type-fest';
-
-export type StorageType = 'local' | 'session';
 
 function getStorage(type: StorageType): Storage {
   if (typeof window === 'undefined') {
@@ -18,7 +16,7 @@ function getStorage(type: StorageType): Storage {
   }
 }
 
-export default class BrowserStorage implements IStorageDrive {
+export default class BrowserDriver implements IStorageDrive {
   protected readonly _storage: Storage;
 
   constructor(type: StorageType) {
