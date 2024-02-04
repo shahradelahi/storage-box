@@ -27,6 +27,6 @@ describe('fs-based storage', () => {
   it('Delete', () => {
     client.set('foo', 'bar');
     client.del('foo');
-    expect(client.get('foo')).to.be.undefined;
+    expect(client.get('foo')).to.be.null;
   });
 });

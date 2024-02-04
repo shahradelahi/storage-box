@@ -16,7 +16,7 @@ describe('In-memory basic usage', () => {
   it('Delete', () => {
     client.set('foo', 'bar');
     client.del('foo');
-    expect(client.get('foo')).to.be.undefined;
+    expect(client.get('foo')).to.be.null;
   });
 
   it('Exists', () => {
@@ -81,7 +81,7 @@ describe('In-memory with expiration', () => {
     client.setex('foo', 'bar', 1);
     expect(client.get('foo')).to.equal('bar');
     await sleep(1100);
-    expect(client.get('foo')).to.be.undefined;
+    expect(client.get('foo')).to.be.null;
   });
 
   it('List set and get', async () => {
@@ -91,7 +91,7 @@ describe('In-memory with expiration', () => {
     client.lsetex('foo', 1, 'bar', 1);
     expect(client.lget('foo', 1)).to.equal('bar');
     await sleep(1100);
-    expect(client.lget('foo', 1)).to.be.undefined;
+    expect(client.lget('foo', 1)).to.be.null;
   });
 
   it('Get TTL', async () => {
