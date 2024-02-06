@@ -1,6 +1,6 @@
 # File-based Storage (fs)
 
-On this page, you can find examples of using the file-based storage. This feature is available only in Node.js and Bun
+On this page, you can find examples of how to use file-based storage. This feature is only available in Node.js and Bun
 environments.
 
 ## 1. Store a value
@@ -12,30 +12,32 @@ import { resovle } from 'path';
 
 const filePath = resovle(process.cwd(), 'data.json');
 const driver = new FsDriver(filePath);
+
 const client = new Client(driver);
 
 client.set('key', 'value');
-
 const value = client.get('key');
 
 console.log(value);
 ```
 
-## 3. Use `msgpack` serializer
+## 2. Use `msgpack` serializer
 
-By default `JSON` serializer is used. You can use following code to use `msgpack` serializer.
+One of the benefits of using the `msgpack` serializer is that it is faster and more efficient than the `JSON`
+serializer. By default, the `JSON` serializer is used. To use the `msgpack` serializer, you need to pass it as an option
+to the `FsDriver` constructor.
 
 ```typescript
-import { Client } from '@litehex/storage-box';
+import { Client, MSGPack } from '@litehex/storage-box';
 import { FsDriver } from '@litehex/storage-box/driver';
-import { MSGPack } from '@litehex/storage-box/parser';
+import { resovle } from 'path';
 
 const filePath = resovle(process.cwd(), 'data.pack');
 const driver = new FsDriver(filePath, { parser: MSGPack });
+
 const client = new Client(driver);
 
 client.set('key', 'value');
-
 const value = client.get('key');
 
 console.log(value);
