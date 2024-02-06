@@ -1,6 +1,6 @@
 {
   "name": "@litehex/storage-box",
-  "version": "0.1.0",
+  "version": "0.1.1-canary.0",
   "description": "A memory-based key–value storage for Browser and Node.js",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -69,9 +69,9 @@
     "@types/chai": "^4.3.11",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.11.16",
-    "chai": "^4.4.1",
+    "chai": "^5.0.3",
     "mocha": "^10.2.0",
-    "prettier": "^3.2.4",
+    "prettier": "^3.2.5",
     "tsup": "^8.0.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
