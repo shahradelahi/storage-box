@@ -1,4 +1,4 @@
-import MemoryDrive from '@/driver/memory.ts';
+import MemoryDriver from '@/driver/memory.ts';
 import type { IStorageBox, IStorageDrive } from '@/typings.ts';
 import type { JsonArray, JsonValue } from 'type-fest';
 
@@ -24,7 +24,7 @@ export class Client implements IStorageBox {
   private _ttl: Map<string, TTL> = new Map();
 
   constructor(storage?: IStorageDrive) {
-    this._drive = storage || new MemoryDrive();
+    this._drive = storage || new MemoryDriver();
     this._load_ttl();
   }
 
@@ -281,4 +281,10 @@ export class Client implements IStorageBox {
   }
 }
 
+// -----------
+
 export type * from '@/typings.ts';
+
+// -----------
+
+export { JsonMap } from '@/parser';

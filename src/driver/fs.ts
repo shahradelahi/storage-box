@@ -1,4 +1,4 @@
-import MemoryDrive from '@/driver/memory.ts';
+import MemoryDriver from '@/driver/memory.ts';
 import { JsonMap } from '@/parser';
 import type { IStorageParser } from '@/typings.ts';
 import debounce from 'debounce';
@@ -11,7 +11,7 @@ export interface FsOptions {
   debounceTime?: number;
 }
 
-export default class FsDrive extends MemoryDrive {
+export default class FsDriver extends MemoryDriver {
   private readonly _path: string;
   private readonly _parser: IStorageParser;
   private readonly _debounceTime: number;

@@ -1,8 +1,8 @@
 # Memory-based Storage
 
-On this pages you can find examples of using the memory-based storage.
+By default, the memory-based storage is used. On this page, you can find examples of using the memory-based storage.
 
-## 1. Create a list of even number and expire each number after 5 seconds
+## 1. Create a list of even numbers and expire each number after 5 seconds
 
 ```typescript
 import { Client } from '@litehex/storage-box';
