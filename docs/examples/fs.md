@@ -20,3 +20,23 @@ const value = client.get('key');
 
 console.log(value);
 ```
+
+## 3. Use `msgpack` serializer
+
+By default `JSON` serializer is used. You can use following code to use `msgpack` serializer.
+
+```typescript
+import { Client } from '@litehex/storage-box';
+import { FsDriver } from '@litehex/storage-box/driver';
+import { MSGPack } from '@litehex/storage-box/parser';
+
+const filePath = resovle(process.cwd(), 'data.pack');
+const driver = new FsDriver(filePath, { parser: MSGPack });
+const client = new Client(driver);
+
+client.set('key', 'value');
+
+const value = client.get('key');
+
+console.log(value);
+```

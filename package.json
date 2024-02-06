@@ -61,6 +61,7 @@
   },
   "packageManager": "pnpm@8.15.1",
   "dependencies": {
+    "@msgpack/msgpack": "3.0.0-beta2",
     "debounce": "^2.0.0",
     "type-fest": "^4.10.2"
   },

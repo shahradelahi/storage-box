@@ -287,4 +287,4 @@ export type * from '@/typings.ts';
 
 // -----------
 
-export { JsonMap } from '@/parser';
+export { JsonMap, MSGPack } from '@/parser';
