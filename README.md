@@ -25,8 +25,11 @@ const client = new Client();
 client.setex('key', 'value', 2);
 
 console.log(client.get('key')); // value
-console.log(client.ttl('key', true)); // ~2000 ms
 
+// time to live in milliseconds
+console.log(client.ttl('key', true)); // 2000
+
+// after 3 seconds
 setTimeout(() => {
   console.log(client.get('key')); // undefined
 }, 3e3);

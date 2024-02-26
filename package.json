@@ -25,8 +25,8 @@
         "default": "./dist/driver/index.mjs"
       },
       "require": {
-        "types": "./dist/drivers/index.d.ts",
-        "default": "./dist/drivers/index.js"
+        "types": "./dist/driver/index.d.ts",
+        "default": "./dist/driver/index.js"
       }
     },
     "./broswer": {
@@ -35,8 +35,8 @@
         "default": "./dist/driver/broswer.mjs"
       },
       "require": {
-        "types": "./dist/drivers/broswer.d.ts",
-        "default": "./dist/drivers/broswer.js"
+        "types": "./dist/driver/broswer.d.ts",
+        "default": "./dist/driver/broswer.js"
       }
     },
     "./parser": {
