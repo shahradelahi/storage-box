@@ -1,7 +1,7 @@
-import type { JsonValue } from 'type-fest';
+import type { Serializable } from '@/typings.ts';
 import { decode, encode } from '@msgpack/msgpack';
 
-export function parse(data: any): Map<string, JsonValue> {
+export function parse(data: any): Map<string, Serializable> {
   if (typeof data !== 'string') {
     throw new Error('MessagePack data must be a string');
   }

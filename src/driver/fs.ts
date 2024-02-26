@@ -1,10 +1,9 @@
 import MemoryDriver from '@/driver/memory.ts';
 import { JsonMap } from '@/parser';
-import type { IStorageParser } from '@/typings.ts';
+import type { IStorageParser, Serializable } from '@/typings.ts';
 import debounce from 'debounce';
-import { existsSync, promises, readFileSync } from 'fs';
-import { resolve } from 'path';
-import type { JsonValue } from 'type-fest';
+import { existsSync, promises, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 export interface FsOptions {
   parser?: IStorageParser;
@@ -47,7 +46,7 @@ export default class FsDriver extends MemoryDriver {
     promises.writeFile(this._path, data, 'utf-8');
   }
 
-  set(key: string, value: JsonValue): void {
+  set(key: string, value: Serializable): void {
     super.set(key, value);
     this._bouncyWriteFn();
   }

@@ -1,6 +1,5 @@
 import MemoryDriver from '@/driver/memory.ts';
-import type { IStorageBox, IStorageDrive } from '@/typings.ts';
-import type { JsonArray, JsonValue } from 'type-fest';
+import type { IStorageBox, IStorageDrive, Serializable, SerializableList } from '@/typings.ts';
 
 const TTL_LIST_KEY = '__TTL_LIST-DONT_USE__';
 
@@ -28,7 +27,7 @@ export class Client implements IStorageBox {
     this._load_ttl();
   }
 
-  get(key: string): JsonValue | null {
+  get(key: string): Serializable | null {
     const ttl = this._ttl.get(key);
 
     // Return if ttl is not set or not expired
@@ -48,7 +47,7 @@ export class Client implements IStorageBox {
     return null;
   }
 
-  set(key: string, value: JsonValue | null): void {
+  set(key: string, value: Serializable | null): void {
     this._drive.set(key, value);
   }
 
@@ -60,6 +59,10 @@ export class Client implements IStorageBox {
     return this._drive.exists(key);
   }
 
+  has(key: string): boolean {
+    return this._drive.exists(key);
+  }
+
   keys(): string[] {
     return this._drive.keys();
   }
@@ -68,7 +71,7 @@ export class Client implements IStorageBox {
     this._drive.clear();
   }
 
-  private _get_list(key: string): JsonValue[] {
+  private _get_list(key: string): SerializableList {
     if (!this._drive.exists(key)) {
       this._drive.set(key, []);
     }
@@ -81,17 +84,17 @@ export class Client implements IStorageBox {
     return list;
   }
 
-  list(key: string): JsonArray {
+  list(key: string): SerializableList {
     return this._get_list(key);
   }
 
-  lset(key: string, index: number, value: JsonValue | null): void {
+  lset(key: string, index: number, value: Serializable | null): void {
     const list = this._get_list(key);
     list[index] = value;
     this._drive.set(key, list);
   }
 
-  lget(key: string, index: number): JsonValue | null {
+  lget(key: string, index: number): Serializable | null {
     const ttl = this._ttl.get(key);
 
     if (!ttl || ttl.dat > Date.now()) {
@@ -117,13 +120,13 @@ export class Client implements IStorageBox {
     this._drive.set(key, list);
   }
 
-  lpush(key: string, value: JsonValue): void {
+  lpush(key: string, value: Serializable): void {
     const list = this._get_list(key);
     list.push(value);
     this._drive.set(key, list);
   }
 
-  lpop(key: string): JsonValue | undefined {
+  lpop(key: string): Serializable | undefined {
     const list = this._get_list(key);
     return list.pop();
   }
@@ -137,7 +140,7 @@ export class Client implements IStorageBox {
     this._drive.set(key, []);
   }
 
-  lrange(key: string, start: number, stop: number): JsonValue[] {
+  lrange(key: string, start: number, stop: number): Serializable[] {
     const list = this._get_list(key);
     return list.slice(start, stop);
   }
@@ -223,7 +226,7 @@ export class Client implements IStorageBox {
    * @param value
    * @param seconds
    */
-  setex(key: string, value: JsonValue, seconds: number) {
+  setex(key: string, value: Serializable, seconds: number) {
     this._drive.set(key, value);
     const secs = seconds * 1000;
     const delAt = Date.now() + secs;
@@ -243,7 +246,7 @@ export class Client implements IStorageBox {
    * @param value
    * @param seconds
    */
-  lsetex(key: string, index: number, value: any, seconds: number) {
+  lsetex(key: string, index: number, value: Serializable, seconds: number) {
     const list = this._get_list(key);
     list[index] = value;
     this._drive.set(key, list);

@@ -1,8 +1,7 @@
 /**
  * This is a browser storage driver for accessing the browser's local/session storage.
  */
-import type { IStorageDrive, StorageType } from '@/typings.ts';
-import type { JsonValue } from 'type-fest';
+import type { IStorageDrive, Serializable, StorageType } from '@/typings.ts';
 
 function getStorage(type: StorageType): Storage {
   if (typeof window === 'undefined') {
@@ -29,7 +28,7 @@ export default class BrowserDriver implements IStorageDrive {
     this._storage = storage;
   }
 
-  get(key: string): JsonValue | undefined {
+  get(key: string): Serializable | undefined {
     const value = this._storage.getItem(key);
     if (value === null) {
       return undefined;
@@ -37,7 +36,7 @@ export default class BrowserDriver implements IStorageDrive {
     return value;
   }
 
-  set(key: string, value: JsonValue): void {
+  set(key: string, value: Serializable): void {
     // If value was undefined or null we should remove the key
     if (value === undefined || value === null) {
       this.del(key);

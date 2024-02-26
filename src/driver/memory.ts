@@ -1,11 +1,11 @@
 import { JsonMap } from '@/parser';
-import type { IStorageDrive } from '@/typings.ts';
+import { IStorageDrive, Serializable } from '@/typings.ts';
 import type { JsonValue } from 'type-fest';
 
 export default class MemoryDriver implements IStorageDrive {
-  protected _storage: Map<string, JsonValue>;
+  protected _storage: Map<string, Serializable>;
 
-  constructor(storage?: Map<string, JsonValue>) {
+  constructor(storage?: Map<string, Serializable>) {
     if (storage) {
       this._storage = JsonMap.parse(storage);
     } else {
@@ -13,11 +13,11 @@ export default class MemoryDriver implements IStorageDrive {
     }
   }
 
-  get(key: string): JsonValue | undefined {
+  get(key: string): Serializable | undefined {
     return this._storage.get(key);
   }
 
-  set(key: string, value: JsonValue): void {
+  set(key: string, value: Serializable): void {
     this._storage.set(key, value);
   }
 

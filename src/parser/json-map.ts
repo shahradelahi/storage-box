@@ -1,6 +1,6 @@
-import type { JsonValue } from 'type-fest';
+import type { Serializable } from '@/typings.ts';
 
-export function parse(data: any): Map<string, JsonValue> {
+export function parse(data: any): Map<string, Serializable> {
   if (data instanceof Map) {
     return data;
   }
@@ -8,7 +8,7 @@ export function parse(data: any): Map<string, JsonValue> {
     throw new Error('data must be an object or a string');
   }
   const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-  const hashMap = new Map<string, JsonValue>();
+  const hashMap = new Map<string, Serializable>();
   Object.entries(parsed).forEach(([k, v]) => {
     hashMap.set(k, v as any);
   });
