@@ -1,7 +1,6 @@
+import { TTL_LIST_KEY } from '@/constants.ts';
 import MemoryDriver from '@/driver/memory.ts';
 import type { IStorageBox, IStorageDrive, Serializable, SerializableList } from '@/typings.ts';
-
-const TTL_LIST_KEY = '__TTL_LIST-DONT_USE__';
 
 type TTL = {
   type: 'key' | 'list';

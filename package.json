@@ -8,48 +8,6 @@
   "files": [
     "dist/**"
   ],
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
-    },
-    "./driver": {
-      "import": {
-        "types": "./dist/driver/index.d.mts",
-        "default": "./dist/driver/index.mjs"
-      },
-      "require": {
-        "types": "./dist/driver/index.d.ts",
-        "default": "./dist/driver/index.js"
-      }
-    },
-    "./broswer": {
-      "import": {
-        "types": "./dist/driver/broswer.d.mts",
-        "default": "./dist/driver/broswer.mjs"
-      },
-      "require": {
-        "types": "./dist/driver/broswer.d.ts",
-        "default": "./dist/driver/broswer.js"
-      }
-    },
-    "./parser": {
-      "import": {
-        "types": "./dist/parser/index.d.mts",
-        "default": "./dist/parser/index.mjs"
-      },
-      "require": {
-        "types": "./dist/parser/index.d.ts",
-        "default": "./dist/parser/index.js"
-      }
-    }
-  },
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
@@ -92,5 +50,47 @@
     "browser",
     "nodejs",
     "litehex"
-  ]
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./driver": {
+      "import": {
+        "types": "./dist/driver/index.d.mts",
+        "default": "./dist/driver/index.mjs"
+      },
+      "require": {
+        "types": "./dist/driver/index.d.ts",
+        "default": "./dist/driver/index.js"
+      }
+    },
+    "./broswer": {
+      "import": {
+        "types": "./dist/driver/broswer.d.mts",
+        "default": "./dist/driver/broswer.mjs"
+      },
+      "require": {
+        "types": "./dist/driver/broswer.d.ts",
+        "default": "./dist/driver/broswer.js"
+      }
+    },
+    "./parser": {
+      "import": {
+        "types": "./dist/parser/index.d.mts",
+        "default": "./dist/parser/index.mjs"
+      },
+      "require": {
+        "types": "./dist/parser/index.d.ts",
+        "default": "./dist/parser/index.js"
+      }
+    }
+  }
 }
