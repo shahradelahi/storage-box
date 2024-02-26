@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import fs from 'fs';
 import { resolve } from 'path';
 
-describe('fs-based storage', () => {
+describe('Fs-based storage', () => {
   const filePath = resolve(process.cwd(), 'tests', 'test.json');
 
   using drive = new FsDriver(filePath);
@@ -32,7 +32,7 @@ describe('fs-based storage', () => {
   });
 });
 
-describe('fs-based storage - MSGPack', () => {
+describe('Fs-based storage - MSGPack', () => {
   const filePath = resolve(process.cwd(), 'tests', 'test.pack');
 
   using drive = new FsDriver(filePath, { parser: MSGPack });

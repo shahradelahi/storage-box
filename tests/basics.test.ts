@@ -1,7 +1,7 @@
 import { Client } from '@/index.ts';
 import { expect } from 'chai';
 
-describe('In-memory basic usage', () => {
+describe('Memory-based - Basic usage', () => {
   const client = new Client();
 
   beforeEach(() => {
@@ -19,9 +19,9 @@ describe('In-memory basic usage', () => {
     expect(client.get('foo')).to.be.null;
   });
 
-  it('Exists', () => {
+  it('Exists/Has', () => {
     client.set('foo', 'bar');
-    expect(client.exists('foo')).to.be.true;
+    expect(client.has('foo')).to.be.true;
     client.del('foo');
     expect(client.exists('foo')).to.be.false;
   });
@@ -31,46 +31,9 @@ describe('In-memory basic usage', () => {
     client.set('bar', 'foo');
     expect(client.keys()).to.have.members(['foo', 'bar']);
   });
-
-  it('Clear', () => {
-    client.set('foo', 'bar');
-    client.set('bar', 'foo');
-    client.clear();
-    expect(client.keys()).to.be.empty;
-  });
-
-  it('List', () => {
-    client.lpush('foo', 'bar');
-    client.lpush('foo', 'foo');
-    client.lpush('foo', 'baz');
-    expect(client.list('foo')).to.have.members(['baz', 'foo', 'bar']);
-  });
-
-  it('List set', () => {
-    client.lpush('foo', 'bar');
-    client.lpush('foo', 'foo');
-    client.lpush('foo', 'baz');
-    client.lset('foo', 1, 'bar');
-    expect(client.list('foo')).to.have.members(['baz', 'bar', 'bar']);
-  });
-
-  it('List get', () => {
-    client.lpush('foo', 'bar');
-    client.lpush('foo', 'foo');
-    client.lpush('foo', 'baz');
-    expect(client.lget('foo', 1)).to.equal('foo');
-  });
-
-  it('List range', () => {
-    client.lpush('foo', 'bar');
-    client.lpush('foo', 'foo');
-    client.lpush('foo', 'baz');
-    expect(client.list('foo')).to.have.members(['baz', 'foo', 'bar']);
-    expect(client.lrange('foo', 0, 2)).to.have.members(['foo', 'bar']);
-  });
 });
 
-describe('In-memory with expiration', () => {
+describe('Memory-based - Key expiration', () => {
   const client = new Client();
 
   beforeEach(() => {
@@ -94,18 +57,62 @@ describe('In-memory with expiration', () => {
     expect(client.lget('foo', 1)).to.be.null;
   });
 
-  it('Get TTL', async () => {
+  it('should get the key TTL', async () => {
     client.setex('foo', 'bar', 2);
     expect(client.ttl('foo')).to.be.greaterThanOrEqual(0);
     await sleep(2100);
     expect(client.ttl('foo')).to.equal(-1);
   });
 
-  it('Get TTL in milliseconds', async () => {
+  it('should get TTL in milliseconds', async () => {
     client.setex('foo', 'bar', 2);
     expect(client.ttl('foo', true)).to.be.greaterThanOrEqual(1000);
     await sleep(2100);
     expect(client.ttl('foo', true)).to.equal(-1);
+  });
+});
+
+describe('List operations', () => {
+  const c = new Client();
+  beforeEach(() => {
+    c.clear();
+  });
+
+  it('List - Get entry values in list', () => {
+    c.lpush('foo', 'bar');
+    c.lpush('foo', 'foo');
+    c.lpush('foo', 'baz');
+    expect(c.list('foo')).to.have.members(['baz', 'foo', 'bar']);
+  });
+
+  it('Clear - Reset list to empty state', () => {
+    c.set('foo', 'bar');
+    c.set('bar', 'foo');
+    c.clear();
+    expect(c.keys()).to.be.empty;
+  });
+
+  it('List set', () => {
+    c.lpush('foo', 'bar');
+    c.lpush('foo', 'foo');
+    c.lpush('foo', 'baz');
+    c.lset('foo', 1, 'bar');
+    expect(c.list('foo')).to.have.members(['baz', 'bar', 'bar']);
+  });
+
+  it('List get', () => {
+    c.lpush('foo', 'bar');
+    c.lpush('foo', 'foo');
+    c.lpush('foo', 'baz');
+    expect(c.lget('foo', 1)).to.equal('foo');
+  });
+
+  it('List range', () => {
+    c.lpush('foo', 'bar');
+    c.lpush('foo', 'foo');
+    c.lpush('foo', 'baz');
+    expect(c.list('foo')).to.have.members(['baz', 'foo', 'bar']);
+    expect(c.lrange('foo', 0, 2)).to.have.members(['foo', 'bar']);
   });
 });
 
