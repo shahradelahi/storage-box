@@ -1,6 +1,6 @@
 import MemoryDriver from '@/driver/memory.ts';
-import { JsonMap } from '@/parser';
 import type { IStorageParser, Serializable } from '@/typings.ts';
+import { JsonMap } from '@/index.ts';
 import debounce from 'debounce';
 import { resolve } from 'path';
 

@@ -1,4 +1,4 @@
-import { JsonMap } from '@/parser';
+import { JsonMap } from '@/index.ts';
 import { IStorageDrive, Serializable } from '@/typings.ts';
 
 export default class MemoryDriver implements IStorageDrive {

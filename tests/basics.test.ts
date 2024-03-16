@@ -1,4 +1,4 @@
-import { Client } from '@/index.ts';
+import { Client } from '@litehex/storage-box';
 import { expect } from 'chai';
 
 describe('Memory-based - Basic usage', () => {

@@ -19,7 +19,8 @@
     "downlevelIteration": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@litehex/storage-box": ["./src/index.ts"]
     },
     "outDir": "dist"
   },

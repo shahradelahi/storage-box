@@ -1,5 +1,5 @@
 import { TTL_LIST_KEY } from '@/constants.ts';
-import { MemoryDriver } from '@/driver';
+import { MemoryDriver } from '@/index.ts';
 import { SerializedTTL, TTL } from '@/ttl.ts';
 import { IStorageBox, IStorageDrive, Serializable, SerializableList } from '@/typings.ts';
 

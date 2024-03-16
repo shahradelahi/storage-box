@@ -1,4 +1,4 @@
-import { JsonMap, MSGPack } from '@/parser';
+import { JsonMap, MSGPack } from '@litehex/storage-box';
 import { expect } from 'chai';
 
 const data = {
