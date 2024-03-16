@@ -2,8 +2,7 @@ import MemoryDriver from '@/driver/memory.ts';
 import { JsonMap } from '@/parser';
 import type { IStorageParser, Serializable } from '@/typings.ts';
 import debounce from 'debounce';
-import { existsSync, promises, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { resolve } from 'path';
 
 export interface FsOptions {
   parser?: IStorageParser;
@@ -16,34 +15,53 @@ export default class FsDriver extends MemoryDriver {
   private readonly _debounceTime: number;
   private readonly _bouncyWriteFn: () => void;
 
-  constructor(path: string, { parser, debounceTime }: FsOptions = {}) {
-    const solvedPath = resolve(path);
+  private readonly _fsMod = import('node:fs');
+
+  public state: 'pending' | 'ready' = 'pending';
+
+  constructor(path: string, opts: FsOptions = {}) {
+    const { parser, debounceTime } = opts;
+
+    const _path = resolve(path);
     const _parser = parser || JsonMap;
+    super();
 
-    if (existsSync(solvedPath)) {
-      const data = readFileSync(solvedPath, 'utf-8');
-      const storage = _parser.parse(data === '' ? '{}' : data);
-      super(storage);
-    } else {
-      super();
-    }
-
-    this._path = solvedPath;
+    this._path = _path;
     this._parser = _parser;
     this._debounceTime = debounceTime || 1;
     this._bouncyWriteFn = debounce(() => {
-      this._write();
+      this._write().catch();
     }, this._debounceTime);
+
+    (async () => {
+      const { existsSync, readFileSync } = await this._fsMod;
+
+      if (existsSync(_path)) {
+        const data = readFileSync(_path, 'utf-8');
+        this._storage = _parser.parse(data === '' ? '{}' : data);
+      }
+
+      this.state = 'ready';
+    })();
   }
 
   [Symbol.dispose](): void {
     this._bouncyWriteFn();
   }
 
-  private _write(): void {
+  private async _write(): Promise<void> {
+    // Check if the storage is ready before writing
+    if (this.state !== 'ready') {
+      // bounce again
+      return this._bouncyWriteFn();
+    }
+
+    const { promises } = await this._fsMod;
+
     const data = this._parser.stringify(this._storage);
+
     // Write file on promise to avoid blocking the event loop
-    promises.writeFile(this._path, data, 'utf-8');
+    promises.writeFile(this._path, data, 'utf-8').catch();
   }
 
   set(key: string, value: Serializable): void {

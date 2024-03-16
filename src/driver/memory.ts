@@ -1,6 +1,5 @@
 import { JsonMap } from '@/parser';
 import { IStorageDrive, Serializable } from '@/typings.ts';
-import type { JsonValue } from 'type-fest';
 
 export default class MemoryDriver implements IStorageDrive {
   protected _storage: Map<string, Serializable>;

@@ -1,6 +1,3 @@
-/**
- * This is a browser storage driver for accessing the browser's local/session storage.
- */
 import type { IStorageDrive, Serializable, StorageType } from '@/typings.ts';
 
 function getStorage(type: StorageType): Storage {

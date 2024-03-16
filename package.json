@@ -21,6 +21,7 @@
   "dependencies": {
     "@msgpack/msgpack": "3.0.0-beta2",
     "debounce": "^2.0.0",
+    "path": "^0.12.7",
     "type-fest": "^4.10.3"
   },
   "devDependencies": {
@@ -70,16 +71,6 @@
       "require": {
         "types": "./dist/driver/index.d.ts",
         "default": "./dist/driver/index.js"
-      }
-    },
-    "./broswer": {
-      "import": {
-        "types": "./dist/driver/broswer.d.mts",
-        "default": "./dist/driver/broswer.mjs"
-      },
-      "require": {
-        "types": "./dist/driver/broswer.d.ts",
-        "default": "./dist/driver/broswer.js"
       }
     },
     "./parser": {
