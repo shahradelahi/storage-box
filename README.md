@@ -2,8 +2,8 @@
 
 > Storing data in key-value structure to multiple different storages.
 
-[![npm](https://img.shields.io/npm/v/p-safe)](https://www.npmjs.com/package/p-safe)
-[![npm bundle size](https://packagephobia.now.sh/badge?p=p-safe)](https://packagephobia.now.sh/result?p=p-safe)
+[![npm](https://img.shields.io/npm/v/@litehex/storage-box)](https://www.npmjs.com/package/@litehex/storage-box)
+[![npm bundle size](https://packagephobia.now.sh/badge?p=@litehex/storage-box)](https://packagephobia.now.sh/result?p=@litehex/storage-box)
 
 ### Notable Features
 
@@ -46,7 +46,7 @@ setTimeout(() => {
 
 ### 📚 Documentation
 
-For all configuration options, please see [the API docs](https://paka.dev/npm/@litehex/storage-box@canary/api#module-index-export-Options).
+For all configuration options, please see [the API docs](https://paka.dev/npm/@litehex/storage-box@canary/api).
 
 ### Contributing
 
