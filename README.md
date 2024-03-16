@@ -1,21 +1,24 @@
 # storage-box
 
-A library for storing data in key-value pairs in multiple different storages.
+> Storing data in key-value structure to multiple different storages.
 
-## Notable Features
+[![npm](https://img.shields.io/npm/v/p-safe)](https://www.npmjs.com/package/p-safe)
+[![npm bundle size](https://packagephobia.now.sh/badge?p=p-safe)](https://packagephobia.now.sh/result?p=p-safe)
+
+### Notable Features
 
 - Easy to use API
-- Support for Node.js, Bun and the browser
+- Support for **Node.js**, **Bun** and the **browser**
 - Support for multiple storage types (memory, file, local storage, etc.)
 - Support for time-based expiration
 
-## Installation
+### Installation
 
 ```bash
 npm install @litehex/storage-box
 ```
 
-## Usage
+### 📖 Usage
 
 ```typescript
 import { Client } from '@litehex/storage-box';
@@ -35,22 +38,22 @@ setTimeout(() => {
 }, 3e3);
 ```
 
-## Supported Storages
+### 📦 Storage Types
 
 - Memory ([Examples](docs/examples/memory.md))
 - File-based (Fs) ([Examples](docs/examples/fs.md))
 - Local/Session Storage ([Examples](docs/examples/browser.md))
 
-## API
+### 📚 Documentation
 
-- [Client](docs/api/client.md)
+For all configuration options, please see [the API docs](https://paka.dev/npm/@litehex/storage-box@canary/api#module-index-export-Options).
 
-## Contributing
+### Contributing
 
 You can contribute to this project by opening an issue or a pull request
 on [GitHub](https://github.com/shahradelahi/storage-box). Feel free to contribute, we care about your ideas and
 suggestions.
 
-## License
+### License
 
-This project is licensed under the GPL-3.0 License - see the [LICENSE](LICENSE) file for details
+[MIT](/LICENSE) © [Shahrad Elahi](https://github.com/shahradelahi)

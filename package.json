@@ -1,6 +1,6 @@
 {
   "name": "@litehex/storage-box",
-  "version": "0.2.0-canary.0",
+  "version": "0.2.0",
   "description": "A memory-based key–value storage for Browser and Node.js",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
