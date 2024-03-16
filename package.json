@@ -35,7 +35,7 @@
     "tsx": "^4.7.1",
     "typescript": "^5.3.3"
   },
-  "license": "GPL-3.0",
+  "license": "MIT",
   "author": "Shahrad Elahi <shahrad@litehex.com> (https://github.com/shahradelahi)",
   "repository": {
     "type": "git",
