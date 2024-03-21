@@ -1,46 +1,47 @@
-import type { JsonArray, JsonObject, JsonValue } from 'type-fest';
-import { JsonPrimitive } from 'type-fest/source/basic';
+import type { JsonArray, JsonObject, JsonValue, JsonPrimitive } from 'type-fest';
 
-export interface IStorageBox {
-  /**
-   * Basic key-value operations
-   */
-  get(key: string): Serializable | null;
-  set(key: string, value: Serializable | null): void;
-  del(key: string): void;
-  exists(key: string): boolean;
-  has(key: string): boolean;
-  keys(): string[];
-  clear(): void;
+export interface IOperations<Driver extends IStorageDrive> {
+  ///
+  // Basic key-value operations
+  ///
+  get(key: string): Promise<Serializable | null>;
+  set(key: string, value: Serializable | null): Promise<void>;
+  del(key: string): Promise<void>;
+  exists(key: string): Promise<boolean>;
+  has(key: string): Promise<boolean>;
+  keys(): Promise<string[]>;
+  clear(): Promise<void>;
 
-  /**
-   * List
-   */
-  list(key: string): SerializableList;
-  lset(key: string, index: number, value: Serializable | null): void;
-  lget(key: string, index: number): Serializable | null;
-  ldel(key: string, index: number): void;
-  lpush(key: string, value: Serializable): void;
-  lpop(key: string): Serializable | undefined;
-  lsize(key: string): number;
-  lclear(key: string): void;
-  lrange(key: string, start: number, stop: number): SerializableList;
+  ///
+  // List
+  ///
+  list(key: string): Promise<SerializableList>;
+  lset(key: string, index: number, value: Serializable | null): Promise<void>;
+  lget(key: string, index: number): Promise<Serializable | null>;
+  ldel(key: string, index: number): Promise<void>;
+  lpush(key: string, value: Serializable): Promise<void>;
+  lpop(key: string): Promise<Serializable | undefined>;
+  lsize(key: string): Promise<number>;
+  lclear(key: string): Promise<void>;
+  lrange(key: string, start: number, stop: number): Promise<SerializableList>;
 
-  /**
-   * Timed keys
-   */
-  setex(key: string, value: Serializable, seconds: number): void;
-  lsetex(key: string, index: number, value: Serializable, seconds: number): void;
-  ttl(key: string): number;
+  ///
+  // Timed keys
+  ///
+  setex(key: string, value: Serializable, seconds: number): Promise<void>;
+  lsetex(key: string, index: number, value: Serializable, seconds: number): Promise<void>;
+  ttl(key: string): Promise<number>;
 }
 
 export interface IStorageDrive {
-  get(key: string): Serializable | undefined;
-  set(key: string, value: Serializable): void;
-  del(key: string): void;
-  exists(key: string): boolean;
-  keys(): string[];
-  clear(): void;
+  prepare?(): Promise<void>;
+
+  get(key: string): Promise<Serializable | SerializableList | undefined>;
+  set(key: string, value: Serializable | SerializableList): Promise<void>;
+  del(key: string): Promise<void>;
+  exists(key: string): Promise<boolean>;
+  keys(): Promise<string[]>;
+  clear(): Promise<void>;
 }
 
 export interface IStorageParser {
@@ -48,15 +49,10 @@ export interface IStorageParser {
   parse(value: any): Map<string, Serializable>;
 }
 
+export type StorageState = 'pending' | 'ready';
+
 export type ParserStringifyFn = (value: any) => string;
 export type ParserParseFn = (value: any) => Map<string, Serializable>;
-
-export type CommonDriverOptions = {
-  // Parser to use for serializing and deserializing data. Defaults to JSON.
-  parser?: IStorageParser;
-  // Bounce time for debouncing write operations
-  debounceTime?: number;
-};
 
 export type StorageType = 'local' | 'session';
 

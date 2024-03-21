@@ -1,6 +1,6 @@
 import MemoryDriver from '@/driver/memory.ts';
-import type { IStorageParser, Serializable } from '@/typings.ts';
 import { JsonMap } from '@/index.ts';
+import type { IStorageParser, Serializable } from '@/typings.ts';
 import debounce from 'debounce';
 import { resolve } from 'path';
 
@@ -17,10 +17,8 @@ export default class FsDriver extends MemoryDriver {
 
   private readonly _fsMod = import('node:fs');
 
-  public state: 'pending' | 'ready' = 'pending';
-
   constructor(path: string, opts: FsOptions = {}) {
-    const { parser, debounceTime } = opts;
+    const { parser, debounceTime = 10 } = opts;
 
     const _path = resolve(path);
     const _parser = parser || JsonMap;
@@ -32,17 +30,22 @@ export default class FsDriver extends MemoryDriver {
     this._bouncyWriteFn = debounce(() => {
       this._write().catch();
     }, this._debounceTime);
+  }
 
-    (async () => {
-      const { existsSync, readFileSync } = await this._fsMod;
+  async prepare() {
+    const { existsSync, readFileSync } = await this._fsMod;
 
-      if (existsSync(_path)) {
-        const data = readFileSync(_path, 'utf-8');
-        this._storage = _parser.parse(data === '' ? '{}' : data);
-      }
-
-      this.state = 'ready';
-    })();
+    if (existsSync(this._path)) {
+      const data = readFileSync(this._path, 'utf-8');
+      const _storage = this._parser.parse(data === '' ? '{}' : data);
+      _storage.forEach((val, key) => {
+        // If the data was in the memory it means it was changed before load time.
+        // do NOT load the that are changed
+        if (!this._storage.has(key)) {
+          this._storage.set(key, val);
+        }
+      });
+    }
   }
 
   [Symbol.dispose](): void {
@@ -50,12 +53,6 @@ export default class FsDriver extends MemoryDriver {
   }
 
   private async _write(): Promise<void> {
-    // Check if the storage is ready before writing
-    if (this.state !== 'ready') {
-      // bounce again
-      return this._bouncyWriteFn();
-    }
-
     const { promises } = await this._fsMod;
 
     const data = this._parser.stringify(this._storage);
@@ -64,18 +61,18 @@ export default class FsDriver extends MemoryDriver {
     promises.writeFile(this._path, data, 'utf-8').catch();
   }
 
-  set(key: string, value: Serializable): void {
-    super.set(key, value);
+  async set(key: string, value: Serializable): Promise<void> {
+    await super.set(key, value);
     this._bouncyWriteFn();
   }
 
-  del(key: string): void {
+  async del(key: string): Promise<void> {
     super.del(key);
     this._bouncyWriteFn();
   }
 
-  clear(): void {
-    super.clear();
+  async clear(): Promise<void> {
+    await super.clear();
     this._bouncyWriteFn();
   }
 }

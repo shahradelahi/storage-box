@@ -1,8 +1,8 @@
-import { JsonMap } from '@/index.ts';
-import { IStorageDrive, Serializable } from '@/typings.ts';
+import { JsonMap, SerializableList } from '@/index.ts';
+import type { IStorageDrive, Serializable } from '@/typings.ts';
 
 export default class MemoryDriver implements IStorageDrive {
-  protected _storage: Map<string, Serializable>;
+  protected _storage: Map<string, Serializable | SerializableList>;
 
   constructor(storage?: Map<string, Serializable>) {
     if (storage) {
@@ -12,27 +12,27 @@ export default class MemoryDriver implements IStorageDrive {
     }
   }
 
-  get(key: string): Serializable | undefined {
+  async get(key: string) {
     return this._storage.get(key);
   }
 
-  set(key: string, value: Serializable): void {
+  async set(key: string, value: Serializable) {
     this._storage.set(key, value);
   }
 
-  del(key: string): void {
+  async del(key: string) {
     this._storage.delete(key);
   }
 
-  exists(key: string): boolean {
+  async exists(key: string) {
     return this._storage.has(key);
   }
 
-  keys(): string[] {
+  async keys() {
     return Array.from(this._storage.keys());
   }
 
-  clear(): void {
+  async clear() {
     this._storage.clear();
   }
 }

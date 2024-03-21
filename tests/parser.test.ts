@@ -35,8 +35,6 @@ describe('MSGPack-MAP', () => {
     hashMap.set('bar', 'baz');
     const msgPack = MSGPack.stringify(hashMap);
     expect(isBase64(msgPack)).to.be.true;
-
-    console.log(msgPack);
   });
 
   it('parse', () => {
