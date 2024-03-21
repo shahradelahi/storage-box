@@ -25,7 +25,7 @@ export default class BrowserDriver implements IStorageDrive {
     this._storage = storage;
   }
 
-  get(key: string): Serializable | undefined {
+  async get(key: string): Promise<Serializable | undefined> {
     const value = this._storage.getItem(key);
     if (value === null) {
       return undefined;
@@ -33,32 +33,32 @@ export default class BrowserDriver implements IStorageDrive {
     return value;
   }
 
-  set(key: string, value: Serializable): void {
+  async set(key: string, value: Serializable): Promise<void> {
     // If value was undefined or null we should remove the key
     if (value === undefined || value === null) {
-      this.del(key);
+      await this.del(key);
       return;
     }
 
     this._storage.setItem(key, value.toString());
   }
 
-  del(key: string): void {
+  async del(key: string): Promise<void> {
     this._storage.removeItem(key);
   }
 
-  exists(key: string): boolean {
+  async exists(key: string): Promise<boolean> {
     return this._storage.getItem(key) !== null;
   }
 
-  keys(): string[] {
+  async keys(): Promise<string[]> {
     return Object.keys(this._storage);
   }
 
   /**
    * Clears the storage. Please be careful with this method.
    */
-  clear(): void {
+  async clear(): Promise<void> {
     this._storage.clear();
   }
 }

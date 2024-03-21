@@ -1,6 +1,6 @@
 {
   "name": "@litehex/storage-box",
-  "version": "0.2.1",
+  "version": "0.3.0-canary.0",
   "description": "A memory-based key–value storage for Browser and Node.js",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -23,7 +23,7 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
-    "test": "mocha --recursive \"**/*.test.ts\"",
+    "test": "mocha \"**/*.test.ts\"",
     "type-check": "tsc --noEmit",
     "format:check": "prettier --check \"**/*.{ts,md}\"",
     "format": "prettier --write .",
