@@ -14,8 +14,8 @@ const driver = new FsDriver(filePath);
 
 const client = new Client(driver);
 
-client.set('key', 'value');
-const value = client.get('key');
+await client.set('key', 'value');
+const value = await client.get('key');
 
 console.log(value);
 ```
@@ -35,8 +35,8 @@ const driver = new FsDriver(filePath, { parser: MSGPack });
 
 const client = new Client(driver);
 
-client.set('key', 'value');
-const value = client.get('key');
+await client.set('key', 'value');
+const value = await client.get('key');
 
 console.log(value);
 ```
