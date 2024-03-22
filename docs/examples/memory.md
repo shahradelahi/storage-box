@@ -10,10 +10,10 @@ import { Client } from '@litehex/storage-box';
 const client = new Client();
 
 for (let i = 0; i < 10; i++) {
-  client.lsetex('even', i, i * 2, 5);
+  await client.lsetex('even', i, i * 2, 5);
 }
 
-setTimeout(() => {
-  console.log(client.lget('even', 0)); // undefined
+setTimeout(async () => {
+  console.log(await client.lget('even', 0)); // undefined
 }, 5000);
 ```

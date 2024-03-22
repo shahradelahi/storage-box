@@ -10,12 +10,12 @@ import { Client, BrowserDriver } from '@litehex/storage-box';
 const driver = new BrowserDriver('local');
 const client = new Client(driver);
 
-client.setex('key', 'value', 5);
+await client.setex('key', 'value', 5);
 
-const value = client.get('key');
+const value = await client.get('key');
 
 console.log(value);
-setTimeout(() => {
-  console.log(client.get('key')); // undefined
+setTimeout(async () => {
+  console.log(await client.get('key')); // undefined
 }, 5000);
 ```

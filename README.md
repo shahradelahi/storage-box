@@ -25,16 +25,16 @@ import { Client } from '@litehex/storage-box';
 
 const client = new Client();
 
-client.setex('key', 'value', 2);
+await client.setex('key', 'value', 2);
 
-console.log(client.get('key')); // value
+console.log(await client.get('key')); // value
 
 // time to live in milliseconds
-console.log(client.ttl('key', true)); // 2000
+console.log(await client.ttl('key', true)); // 2000
 
 // after 3 seconds
-setTimeout(() => {
-  console.log(client.get('key')); // undefined
+setTimeout(async () => {
+  console.log(await client.get('key')); // undefined
 }, 3e3);
 ```
 
