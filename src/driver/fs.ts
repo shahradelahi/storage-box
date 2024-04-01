@@ -1,5 +1,5 @@
 import MemoryDriver from '@/driver/memory.ts';
-import { JsonMap } from '@/index.ts';
+import { JsonMap, MSGPack } from '@/index.ts';
 import type { IStorageParser, Serializable } from '@/typings.ts';
 import debounce from 'debounce';
 import { resolve } from 'path';
@@ -36,8 +36,16 @@ export default class FsDriver extends MemoryDriver {
     const { existsSync, readFileSync } = await this._fsMod;
 
     if (existsSync(this._path)) {
-      const data = readFileSync(this._path, 'utf-8');
-      const _storage = this._parser.parse(data === '' ? '{}' : data);
+      const rawData = readFileSync(this._path, 'utf-8');
+      const parser = this._parser;
+
+      const _storage =
+        parser instanceof MSGPack
+          ? MSGPack.parse(rawData === '' ? 'gA==' : rawData)
+          : parser instanceof JsonMap
+            ? JsonMap.parse(rawData === '' ? '{}' : rawData)
+            : new Map<string, Serializable>();
+
       _storage.forEach((val, key) => {
         // If the data was in the memory it means it was changed before load time.
         // do NOT load the that are changed

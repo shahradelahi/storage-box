@@ -30,7 +30,7 @@ to the `FsDriver` constructor.
 import { Client, FsDriver, MSGPack } from '@litehex/storage-box';
 import { resovle } from 'path';
 
-const filePath = resovle(process.cwd(), 'data.pack');
+const filePath = resovle(process.cwd(), 'data.b64');
 const driver = new FsDriver(filePath, { parser: MSGPack });
 
 const client = new Client(driver);
