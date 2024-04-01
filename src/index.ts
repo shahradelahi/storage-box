@@ -11,8 +11,8 @@ export { default as BrowserDriver } from './driver/browser.ts';
 
 // -----------
 
-export * as JsonMap from '@/parser/json-map.ts';
-export * as MSGPack from '@/parser/msg-pack.ts';
+export { JsonMap } from '@/parser/json-map.ts';
+export { MSGPack } from '@/parser/msg-pack.ts';
 
 // -----------
 
