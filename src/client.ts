@@ -1,7 +1,13 @@
 import { TTL_LIST_KEY } from '@/constants.ts';
 import { MemoryDriver, StorageState } from '@/index.ts';
 import type { SerializedTTL, TTL } from '@/ttl.ts';
-import type { IOperations, IStorageDrive, Serializable, SerializableList } from '@/typings.ts';
+import type {
+  HashField,
+  IOperations,
+  IStorageDrive,
+  Serializable,
+  SerializableList
+} from '@/typings.ts';
 
 class Client<Driver extends IStorageDrive = MemoryDriver> implements IOperations<Driver> {
   private _drive: IStorageDrive;
@@ -91,6 +97,98 @@ class Client<Driver extends IStorageDrive = MemoryDriver> implements IOperations
     await this._drive.clear();
   }
 
+  ////
+  // Hash operations
+  ////
+
+  private async _get_hash(key: string) {
+    if (!(await this._drive.exists(key))) {
+      await this._drive.set(key, {});
+      return {};
+    }
+
+    const map = (await this._drive.get(key)) as Record<HashField, Serializable>;
+    if (!map) {
+      return {};
+    }
+
+    if (typeof map !== 'object') {
+      throw new Error('Accessed non-object value at key: ' + key);
+    }
+
+    return map;
+  }
+
+  async hget(key: string, field: HashField) {
+    await this._preparedDriver();
+
+    const map = await this._get_hash(key);
+    return map[field] ?? null;
+  }
+
+  async hset(key: string, field: HashField, value: Serializable) {
+    await this._preparedDriver();
+    const map = await this._get_hash(key);
+    map[field] = value;
+    await this._drive.set(key, map);
+  }
+
+  async hsetex(key: string, field: HashField, value: Serializable, seconds: number) {
+    await this._preparedDriver();
+    const map = await this._get_hash(key);
+    map[field] = value;
+    await this._drive.set(key, map);
+    const secs = seconds * 1000;
+    const delAt = Date.now() + secs;
+    await this._create_hdel_timout(key, field, delAt);
+  }
+
+  async hkeys(key: string) {
+    await this._preparedDriver();
+    const map = await this._get_hash(key);
+    return Object.keys(map);
+  }
+
+  async hvalues(key: string) {
+    await this._preparedDriver();
+    const map = await this._get_hash(key);
+    return Object.values(map);
+  }
+
+  async hdel(key: string, field: HashField) {
+    await this._preparedDriver();
+    const map = await this._get_hash(key);
+    delete map[field];
+    await this._drive.set(key, map);
+  }
+
+  async hexists(key: string, field: HashField) {
+    await this._preparedDriver();
+    const map = await this._get_hash(key);
+    return field in map;
+  }
+
+  async hsize(key: string) {
+    await this._preparedDriver();
+    const map = await this._get_hash(key);
+    return Object.keys(map).length;
+  }
+
+  async hclear(key: string) {
+    await this._preparedDriver();
+    await this._drive.set(key, {});
+  }
+
+  async hgetall(key: string) {
+    await this._preparedDriver();
+    const map = await this._get_hash(key);
+    return map;
+  }
+
+  ////
+  // List operations
+  ////
+
   private async _get_list(key: string) {
     if (!(await this._drive.exists(key))) {
       await this._drive.set(key, []);
@@ -102,7 +200,7 @@ class Client<Driver extends IStorageDrive = MemoryDriver> implements IOperations
     }
 
     if (!Array.isArray(list)) {
-      throw new Error('Key is not a list or data is corrupted.');
+      throw new Error('Accessed non-array value at key: ' + key);
     }
 
     return list as SerializableList;
@@ -207,10 +305,18 @@ class Client<Driver extends IStorageDrive = MemoryDriver> implements IOperations
         });
 
         // Set the timeout for the key
-        if (rest.type === 'key') {
-          await this._create_del_timout(key, dat);
-        } else {
-          await this._create_ldel_timout(key, rest.index, dat);
+        switch (rest.type) {
+          case 'key':
+            await this._create_del_timout(key, dat);
+            break;
+          case 'list':
+            await this._create_ldel_timout(key, rest.index, dat);
+            break;
+          case 'hash':
+            await this._create_hdel_timout(key, rest.field, dat);
+            break;
+          default:
+            throw new Error('TTL malformed at key: ' + key);
         }
       })
     );
@@ -247,13 +353,26 @@ class Client<Driver extends IStorageDrive = MemoryDriver> implements IOperations
     await this._update_ttl_list();
   }
 
+  private async _create_hdel_timout(key: string, field: HashField, dat: number) {
+    const timeLeft = dat - Date.now();
+    setTimeout(() => {
+      this.hset(key, field, null);
+      this._ttl.delete(key);
+    }, timeLeft);
+
+    this._ttl.set(key, {
+      type: 'hash',
+      field,
+      dat
+    });
+
+    await this._update_ttl_list();
+  }
+
   private async _update_ttl_list() {
     const ttlList: SerializedTTL[] = [];
     this._ttl.forEach((ttl, key) => {
-      ttlList.push({
-        key,
-        ...ttl
-      });
+      ttlList.push(Object.assign(ttl, { key }));
     });
     await this.set(TTL_LIST_KEY, ttlList);
   }

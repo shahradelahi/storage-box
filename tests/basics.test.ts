@@ -54,14 +54,24 @@ describe('Memory-based - TTL', () => {
     expect(await client.get('foo')).to.be.null;
   });
 
-  it('List set and get', async () => {
+  it('List - set and get', async () => {
     await client.lpush('foo', 'bar');
     await client.lpush('foo', 'foo');
     await client.lpush('foo', 'baz');
     await client.lsetex('foo', 1, 'bar', 1);
+
     expect(await client.lget('foo', 1)).to.equal('bar');
+
     await sleep(1100);
+
     expect(await client.lget('foo', 1)).to.be.null;
+  });
+
+  it('Hash - Time-based set and get', async () => {
+    await client.hsetex('foo', 'field', 'bar', 1);
+    expect(await client.hget('foo', 'field')).to.equal('bar');
+    await sleep(1100);
+    expect(await client.hget('foo', 'field')).to.be.null;
   });
 
   it('should get the key TTL', async () => {
@@ -120,5 +130,43 @@ describe('List operations', () => {
     await c.lpush('foo', 'baz');
     expect(await c.list('foo')).to.have.members(['baz', 'foo', 'bar']);
     expect(await c.lrange('foo', 0, 2)).to.have.members(['foo', 'bar']);
+  });
+});
+
+describe('Hash operations', () => {
+  const c = new Client();
+  beforeEach(async () => {
+    await c.clear();
+  });
+
+  it('Hash set and get', async () => {
+    await c.hset('foo', 'bar', 'baz');
+    expect(await c.hget('foo', 'bar')).to.equal('baz');
+  });
+
+  it('Hash get all', async () => {
+    await c.hset('foo', 'bar', 'baz');
+    await c.hset('foo', 'foo', 'bar');
+    await c.hset('foo', 'bar', 'baz');
+
+    const values = await c.hgetall('foo');
+
+    const expected = {
+      bar: 'baz',
+      foo: 'bar'
+    };
+
+    expect(Object.keys(values)).to.have.members(Object.keys(expected));
+
+    for (const [key, value] of Object.entries(expected)) {
+      expect(values).have.property(key, value);
+    }
+  });
+
+  it('Hash delete', async () => {
+    await c.hset('foo', 'bar', 'baz');
+    await c.hdel('foo', 'bar');
+
+    expect(await c.hget('foo', 'bar')).to.be.null;
   });
 });

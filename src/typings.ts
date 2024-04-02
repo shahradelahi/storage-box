@@ -13,6 +13,18 @@ export interface IOperations<Driver extends IStorageDrive> {
   clear(): Promise<void>;
 
   ///
+  // Hash
+  ///
+  hget(key: string, field: HashField): Promise<Serializable | null>;
+  hset(key: string, field: HashField, value: Serializable): Promise<void>;
+  hsetex(key: string, field: HashField, value: Serializable, seconds: number): Promise<void>;
+  hdel(key: string, field: HashField): Promise<void>;
+  hexists(key: string, field: HashField): Promise<boolean>;
+  hsize(key: string): Promise<number>;
+  hclear(key: string): Promise<void>;
+  hgetall(key: string): Promise<HashRecord>;
+
+  ///
   // List
   ///
   list(key: string): Promise<SerializableList>;
@@ -51,10 +63,21 @@ export interface IStorageParser {
 
 export type StorageState = 'pending' | 'ready';
 
+// ---------------------
+
+export type HashField = string | number;
+export type HashRecord = Record<HashField, Serializable>;
+
+// ---------------------
+
 export type ParserStringifyFn = (value: any) => string;
 export type ParserParseFn = (value: any) => Map<string, Serializable>;
 
+// ---------------------
+
 export type StorageType = 'local' | 'session';
+
+// ---------------------
 
 export type { JsonArray, JsonPrimitive, JsonValue, JsonObject };
 
