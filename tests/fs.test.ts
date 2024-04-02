@@ -56,7 +56,7 @@ describe('Fs-based - TTL', () => {
 });
 
 describe('Fs-based storage - MSGPack', () => {
-  const filePath = resolve(process.cwd(), 'tests', 'test.pack');
+  const filePath = resolve(process.cwd(), 'tests', 'test.b64');
 
   using drive = new FsDriver(filePath, { parser: MSGPack });
   const client = new Client(drive);

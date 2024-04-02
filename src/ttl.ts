@@ -1,5 +1,7 @@
+import type { HashField } from '@/typings.ts';
+
 export type TTL = {
-  type: 'key' | 'list';
+  type: 'key' | 'list' | 'hash';
   dat: number;
 } & (
   | {
@@ -8,6 +10,10 @@ export type TTL = {
   | {
       type: 'list';
       index: number;
+    }
+  | {
+      type: 'hash';
+      field: HashField;
     }
 );
 
