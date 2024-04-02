@@ -10,7 +10,8 @@
 - Easy to use API
 - Support for **Node.js**, **Bun** and the **browser**
 - Support for multiple storage types (memory, file, local storage, etc.)
-- Support for time-based expiration
+- Multiple data structures (literals, hashes, lists, etc.)
+- Time-based key expiration
 
 ### Installation
 
