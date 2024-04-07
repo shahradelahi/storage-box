@@ -9,42 +9,42 @@ dependencies:
     specifier: 3.0.0-beta2
     version: 3.0.0-beta2
   debounce:
-    specifier: ^2.0.0
+    specifier: ^2.0
     version: 2.0.0
   path:
-    specifier: ^0.12.7
+    specifier: ^0.12
     version: 0.12.7
   type-fest:
-    specifier: ^4.12.0
+    specifier: ^4.12
     version: 4.12.0
 
 devDependencies:
   '@types/chai':
-    specifier: ^4.3.12
+    specifier: ^4.3
     version: 4.3.12
   '@types/mocha':
-    specifier: ^10.0.6
+    specifier: ^10.0
     version: 10.0.6
   '@types/node':
-    specifier: ^20.11.28
+    specifier: ^20.11
     version: 20.11.28
   chai:
-    specifier: ^5.1.0
+    specifier: ^5.1
     version: 5.1.0
   mocha:
-    specifier: ^10.3.0
+    specifier: ^10.3
     version: 10.3.0
   prettier:
-    specifier: ^3.2.5
+    specifier: ^3.2
     version: 3.2.5
   tsup:
-    specifier: ^8.0.2
+    specifier: ^8.0
     version: 8.0.2(typescript@5.4.2)
   tsx:
-    specifier: ^4.7.1
+    specifier: ^4.7
     version: 4.7.1
   typescript:
-    specifier: ^5.4.2
+    specifier: ^5.4
     version: 5.4.2
 
 packages:
