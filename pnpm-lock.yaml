@@ -16,7 +16,7 @@ dependencies:
     version: 0.12.7
   type-fest:
     specifier: ^4.12
-    version: 4.12.0
+    version: 4.15.0
 
 devDependencies:
   '@types/chai':
@@ -1461,8 +1461,8 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /type-fest@4.12.0:
-    resolution: {integrity: sha512-5Y2/pp2wtJk8o08G0CMkuFPCO354FGwk/vbidxrdhRGZfd0tFnb4Qb8anp9XxXriwBgVPjdWbKpGl4J9lJY2jQ==}
+  /type-fest@4.15.0:
+    resolution: {integrity: sha512-tB9lu0pQpX5KJq54g+oHOLumOx+pMep4RaM6liXh2PKmVRFF+/vAtUP0ZaJ0kOySfVNjF6doBWPHhBhISKdlIA==}
     engines: {node: '>=16'}
     dev: false
 
