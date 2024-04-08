@@ -34,18 +34,18 @@
     "@msgpack/msgpack": "3.0.0-beta2",
     "debounce": "^2.0.0",
     "path": "^0.12.7",
-    "type-fest": "^4.12.0"
+    "type-fest": "^4.15.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.3.12",
+    "@types/chai": "^4.3.14",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^20.11.28",
+    "@types/node": "^20.12.5",
     "chai": "^5.1.0",
-    "mocha": "^10.3.0",
+    "mocha": "^10.4.0",
     "prettier": "^3.2.5",
     "tsup": "^8.0.2",
-    "tsx": "^4.7.1",
-    "typescript": "^5.4.2"
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.4"
   },
   "license": "MIT",
   "author": "Shahrad Elahi <shahrad@litehex.com> (https://github.com/shahradelahi)",
