@@ -18,7 +18,7 @@ export default class FsDriver extends MemoryDriver {
   private readonly _fsMod = import('node:fs');
 
   constructor(path: string, opts: FsOptions = {}) {
-    const { parser, debounceTime = 10 } = opts;
+    const { parser, debounceTime = 100 } = opts;
 
     const _path = resolve(path);
     const _parser = parser || JsonMap;
