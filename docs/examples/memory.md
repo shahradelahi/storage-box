@@ -5,7 +5,7 @@ By default, the memory-based storage is used. On this page, you can find example
 ## 1. Create a list of even numbers and expire each number after 5 seconds
 
 ```typescript
-import { Client } from '@litehex/storage-box';
+import { Client } from 'storage-box';
 
 const client = new Client();
 
