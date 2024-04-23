@@ -18,7 +18,7 @@ export default class FsDriver extends MemoryDriver {
   private readonly _fsMod = import('node:fs');
 
   constructor(path: string, opts: FsOptions = {}) {
-    const { parser, debounceTime = 10 } = opts;
+    const { parser, debounceTime = 100 } = opts;
 
     const _path = resolve(path);
     const _parser = parser || JsonMap;
@@ -30,6 +30,8 @@ export default class FsDriver extends MemoryDriver {
     this._bouncyWriteFn = debounce(() => {
       this._write().catch();
     }, this._debounceTime);
+
+    process.on('exit', () => this._bouncyWriteFn());
   }
 
   async prepare() {
