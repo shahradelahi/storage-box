@@ -7,7 +7,7 @@ import { sleep } from './utils.ts';
 describe('Fs-based storage', () => {
   const filePath = resolve(process.cwd(), 'tests', 'test.json');
 
-  using drive = new FsDriver(filePath);
+  const drive = new FsDriver(filePath);
   const client = new Client(drive);
 
   beforeEach(() => {
@@ -40,14 +40,14 @@ describe('Fs-based - TTL', () => {
 
   it('create a key with expiration and reload again', async () => {
     {
-      using drive = new FsDriver(filePath);
+      const drive = new FsDriver(filePath);
       const client = new Client(drive);
 
       await client.setex('foo', 'bar', 2);
     }
     await sleep(2001);
     {
-      using drive = new FsDriver(filePath);
+      const drive = new FsDriver(filePath);
       const client = new Client(drive);
 
       expect(await client.exists('foo')).to.false;
@@ -58,7 +58,7 @@ describe('Fs-based - TTL', () => {
 describe('Fs-based storage - MSGPack', () => {
   const filePath = resolve(process.cwd(), 'tests', 'test.b64');
 
-  using drive = new FsDriver(filePath, { parser: MSGPack });
+  const drive = new FsDriver(filePath, { parser: MSGPack });
   const client = new Client(drive);
 
   beforeEach(() => {
