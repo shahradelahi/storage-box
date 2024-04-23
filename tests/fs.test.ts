@@ -1,4 +1,4 @@
-import { Client, FsDriver, MSGPack } from '@litehex/storage-box';
+import { Client, FsDriver, MSGPack } from 'storage-box';
 import { expect } from 'chai';
 import fs from 'fs';
 import { resolve } from 'path';

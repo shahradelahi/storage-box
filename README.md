@@ -2,8 +2,8 @@
 
 > Storing data in key-value structure to multiple different storages.
 
-[![npm](https://img.shields.io/npm/v/@litehex/storage-box)](https://www.npmjs.com/package/@litehex/storage-box)
-[![npm bundle size](https://packagephobia.now.sh/badge?p=@litehex/storage-box)](https://packagephobia.now.sh/result?p=@litehex/storage-box)
+[![npm](https://img.shields.io/npm/v/storage-box)](https://www.npmjs.com/package/storage-box)
+[![npm bundle size](https://packagephobia.now.sh/badge?p=storage-box)](https://packagephobia.now.sh/result?p=storage-box)
 
 ### Notable Features
 
@@ -16,13 +16,13 @@
 ### Installation
 
 ```bash
-npm install @litehex/storage-box
+npm i storage-box
 ```
 
 ### 📖 Usage
 
 ```typescript
-import { Client } from '@litehex/storage-box';
+import { Client } from 'storage-box';
 
 const client = new Client();
 
@@ -47,7 +47,7 @@ setTimeout(async () => {
 
 ### 📚 Documentation
 
-For all configuration options, please see [the API docs](https://paka.dev/npm/@litehex/storage-box@canary/api).
+For all configuration options, please see [the API docs](https://paka.dev/npm/storage-box/api).
 
 ### Contributing
 

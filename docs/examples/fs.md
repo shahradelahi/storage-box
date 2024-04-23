@@ -6,7 +6,7 @@ environments.
 ## 1. Store a value
 
 ```typescript
-import { Client, FsDriver } from '@litehex/storage-box';
+import { Client, FsDriver } from 'storage-box';
 import { resovle } from 'path';
 
 const filePath = resovle(process.cwd(), 'data.json');
@@ -27,7 +27,7 @@ serializer. By default, the `JSON` serializer is used. To use the `msgpack` seri
 to the `FsDriver` constructor.
 
 ```typescript
-import { Client, FsDriver, MSGPack } from '@litehex/storage-box';
+import { Client, FsDriver, MSGPack } from 'storage-box';
 import { resovle } from 'path';
 
 const filePath = resovle(process.cwd(), 'data.b64');

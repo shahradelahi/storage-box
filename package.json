@@ -1,7 +1,7 @@
 {
-  "name": "@litehex/storage-box",
+  "name": "storage-box",
   "version": "0.3.0-canary.3",
-  "description": "A memory-based key–value storage for Browser and Node.js",
+  "description": "A memory-based key–value storage for javascript.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -49,6 +49,9 @@
   },
   "license": "MIT",
   "author": "Shahrad Elahi <shahrad@litehex.com> (https://github.com/shahradelahi)",
+  "contributors": [
+    "Seven Du <shiweidu@outlook.com> (https://github.com/medz)"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/shahradelahi/storage-box.git"
