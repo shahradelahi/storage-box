@@ -1,4 +1,4 @@
-import { Client } from '@litehex/storage-box';
+import { Client } from 'storage-box';
 import { expect } from 'chai';
 import { sleep } from './utils.ts';
 
