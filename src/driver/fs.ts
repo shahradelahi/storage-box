@@ -30,6 +30,8 @@ export default class FsDriver extends MemoryDriver {
     this._bouncyWriteFn = debounce(() => {
       this._write().catch();
     }, this._debounceTime);
+
+    process.on('exit', () => this._bouncyWriteFn());
   }
 
   async prepare() {
