@@ -6,6 +6,8 @@ import { resolve } from 'path';
 
 export interface FsOptions {
   parser?: IStorageParser;
+  /** Encoding for the file. */
+  encoding?: BufferEncoding;
   debounceTime?: number;
 }
 
@@ -14,6 +16,7 @@ export default class FsDriver extends MemoryDriver {
   private readonly _parser: IStorageParser;
   private readonly _debounceTime: number;
   private readonly _bouncyWriteFn: DebouncedFunction<() => Promise<void>>;
+  private readonly _encoding: BufferEncoding;
 
   private readonly _fsMod = import('node:fs');
 
@@ -26,6 +29,7 @@ export default class FsDriver extends MemoryDriver {
     this._parser = parser;
     this._debounceTime = debounceTime || 1;
     this._bouncyWriteFn = debounce(this._write, this._debounceTime);
+    this._encoding = opts.encoding || 'utf-8';
 
     process.on('exit', async () => await this._bouncyWriteFn());
   }
@@ -34,7 +38,7 @@ export default class FsDriver extends MemoryDriver {
     const { existsSync, readFileSync } = await this._fsMod;
 
     if (existsSync(this._path)) {
-      const rawData = readFileSync(this._path, 'utf-8');
+      const rawData = readFileSync(this._path, this._encoding);
       const parser = this._parser;
 
       const _storage = rawData === '' ? new Map<string, Serializable>() : parser.parse(rawData);
@@ -58,7 +62,7 @@ export default class FsDriver extends MemoryDriver {
 
     const data = this._parser.stringify(this._storage);
 
-    await promises.writeFile(this._path, data, 'utf-8');
+    await promises.writeFile(this._path, data, this._encoding);
   }
 
   async set(key: string, value: Serializable): Promise<void> {
