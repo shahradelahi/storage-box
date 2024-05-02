@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 /build
+dist
 /.svelte-kit
 /package
 .env
@@ -9,5 +10,6 @@ node_modules
 
 # Ignore files for PNPM, NPM and YARN
 pnpm-lock.yaml
+/.changeset
 package-lock.json
 yarn.lock
