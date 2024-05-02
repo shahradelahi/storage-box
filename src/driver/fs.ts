@@ -1,7 +1,7 @@
 import MemoryDriver from '@/driver/memory.ts';
 import { JsonMap } from '@/index.ts';
 import type { IStorageParser, Serializable } from '@/typings.ts';
-import debounce from 'debounce';
+import debounce, { type DebouncedFunction } from 'debounce';
 import { resolve } from 'path';
 
 export interface FsOptions {
@@ -13,25 +13,21 @@ export default class FsDriver extends MemoryDriver {
   private readonly _path: string;
   private readonly _parser: IStorageParser;
   private readonly _debounceTime: number;
-  private readonly _bouncyWriteFn: () => void;
+  private readonly _bouncyWriteFn: DebouncedFunction<() => Promise<void>>;
 
   private readonly _fsMod = import('node:fs');
 
   constructor(path: string, opts: FsOptions = {}) {
-    const { parser, debounceTime = 100 } = opts;
-
-    const _path = resolve(path);
-    const _parser = parser || JsonMap;
     super();
 
-    this._path = _path;
-    this._parser = _parser;
-    this._debounceTime = debounceTime || 1;
-    this._bouncyWriteFn = debounce(() => {
-      this._write().catch();
-    }, this._debounceTime);
+    const { parser = JsonMap, debounceTime = 100 } = opts;
 
-    process.on('exit', () => this._bouncyWriteFn());
+    this._path = resolve(path);
+    this._parser = parser;
+    this._debounceTime = debounceTime || 1;
+    this._bouncyWriteFn = debounce(this._write, this._debounceTime);
+
+    process.on('exit', async () => await this._bouncyWriteFn());
   }
 
   async prepare() {
@@ -62,8 +58,7 @@ export default class FsDriver extends MemoryDriver {
 
     const data = this._parser.stringify(this._storage);
 
-    // Write file on promise to avoid blocking the event loop
-    promises.writeFile(this._path, data, 'utf-8').catch();
+    await promises.writeFile(this._path, data, 'utf-8');
   }
 
   async set(key: string, value: Serializable): Promise<void> {
@@ -72,7 +67,7 @@ export default class FsDriver extends MemoryDriver {
   }
 
   async del(key: string): Promise<void> {
-    super.del(key);
+    await super.del(key);
     this._bouncyWriteFn();
   }
 
