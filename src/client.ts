@@ -9,7 +9,7 @@ import type {
   SerializableList
 } from '@/typings.ts';
 
-class Client<Driver extends IStorageDrive = MemoryDriver> implements IOperations<Driver> {
+class Client<Driver extends IStorageDrive = MemoryDriver> implements IOperations {
   private _drive: IStorageDrive;
 
   private _ttl: Map<string, TTL> = new Map();
