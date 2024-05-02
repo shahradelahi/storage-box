@@ -1,6 +1,6 @@
 {
   "name": "storage-box",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A memory-based key–value storage for javascript.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
