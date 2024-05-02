@@ -1,46 +1,44 @@
 name: Release Package
 
+##
+# Invoke:
+#   gh workflow run "Release Package"
+##
+
 on:
-  release:
-    types: [created]
+  workflow_dispatch:
 
 jobs:
-  build:
+  release:
+    name: Build & Publish Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use PNPM v8
+        uses: pnpm/action-setup@v2
         with:
           version: 8
-      - uses: actions/setup-node@v3
+
+      - name: Use Node v18
+        uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
-      - run: npm run build
+      - name: Install dependencies
+        run: pnpm install
 
-  publish-npm:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        uses: changesets/action@v1
         with:
-          version: 8
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          registry-url: https://registry.npmjs.org/
-
-      - run: |
-          if grep -q '"version": "${{ github.event.release.tag_name }}"' package.json; then
-            echo "Version already set to ${{ github.event.release.tag_name }}"
-          else
-            echo "Setting version to ${{ github.event.release.tag_name }}"
-            npm version ${{ github.event.release.tag_name }} --no-git-tag-version
-          fi
-
-      - run: pnpm install --frozen-lockfile
-      - run: npm publish
+          commit: 'chore(release): version package'
+          title: 'chore(release): version package'
+          publish: pnpm ci:publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
