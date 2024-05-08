@@ -1,15 +1,13 @@
 name: Release Package
 
-##
-# Invoke:
-#   gh workflow run "Release Package"
-##
-
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - canary
 
 jobs:
   release:
+    if: github.repository == 'shahradelahi/storage-box'
     name: Build & Publish Release
     runs-on: ubuntu-latest
     steps:

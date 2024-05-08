@@ -27,7 +27,7 @@
     "type-check": "tsc --noEmit",
     "format:check": "prettier --check \"**/*.{ts,md}\"",
     "format": "prettier --write .",
-    "ci:publish": "npm build && changeset publish",
+    "ci:publish": "pnpm build && changeset publish",
     "prepublishOnly": "pnpm test && pnpm run format:check && pnpm run type-check && pnpm build"
   },
   "packageManager": "pnpm@8.15.1",
