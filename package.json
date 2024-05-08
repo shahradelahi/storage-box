@@ -30,7 +30,7 @@
     "ci:publish": "pnpm build && changeset publish",
     "prepublishOnly": "pnpm test && pnpm run format:check && pnpm run type-check && pnpm build"
   },
-  "packageManager": "pnpm@8.15.7",
+  "packageManager": "pnpm@8.15.8",
   "dependencies": {
     "@msgpack/msgpack": "3.0.0-beta2",
     "debounce": "^2.0.0",
