@@ -1,6 +1,6 @@
 # Browser Storage
 
-On this pages you can find examples of using the browser-based storages.
+On this page, you can find details of using the browser-based storages.
 
 ## 1. Store a value with expiration time on the local storage
 
