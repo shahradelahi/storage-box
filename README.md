@@ -1,9 +1,11 @@
 # storage-box
 
-> Storing data in key-value structure to multiple different storages.
-
+[![CI](https://github.com/shahradelahi/storage-box/actions/workflows/ci.yml/badge.svg)](https://github.com/shahradelahi/storage-box/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/storage-box)](https://www.npmjs.com/package/storage-box)
 [![npm bundle size](https://packagephobia.now.sh/badge?p=storage-box)](https://packagephobia.now.sh/result?p=storage-box)
+[![MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
+> Storing data in various structures across multiple storage systems.
 
 ### Notable Features
 
@@ -49,7 +51,7 @@ setTimeout(async () => {
 
 For all configuration options, please see [the API docs](https://paka.dev/npm/storage-box/api).
 
-### Contributing
+### 🤝 Contributing
 
 You can contribute to this project by opening an issue or a pull request
 on [GitHub](https://github.com/shahradelahi/storage-box). Feel free to contribute, we care about your ideas and
