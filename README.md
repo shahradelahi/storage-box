@@ -41,9 +41,9 @@ setTimeout(async () => {
 
 ### 📦 Storage Types
 
-- Memory ([Examples](docs/examples/memory.md))
-- File-based (Fs) ([Examples](docs/examples/fs.md))
-- Local/Session Storage ([Examples](docs/examples/browser.md))
+- Memory ([Docs](docs/driver-memory.md)) (default)
+- File-based (Fs) ([Docs](docs/driver-fs.md))
+- Local/Session Storage ([Docs](docs/driver-browser.md))
 
 ### 📚 Documentation
 
