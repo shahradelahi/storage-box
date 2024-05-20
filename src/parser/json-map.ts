@@ -1,5 +1,5 @@
-import type { Serializable } from '@/typings.ts';
-import { toMap } from '@/utils/object.ts';
+import type { Serializable } from '@/typings';
+import { toMap, toPlainObject } from '@/utils/object';
 
 export class JsonMap {
   public static parse(data: any): Map<string, Serializable> {
@@ -7,7 +7,7 @@ export class JsonMap {
       return data;
     }
     if (['object', 'string'].indexOf(typeof data) === -1) {
-      throw new Error('data must be an object or a string');
+      throw new TypeError('data must be an object or a string');
     }
     const parsed = typeof data === 'string' ? JSON.parse(data) : data;
     return toMap(parsed);
@@ -15,9 +15,8 @@ export class JsonMap {
 
   public static stringify(data: any): string {
     if (typeof data !== 'object') {
-      throw new Error('data must be an object');
+      throw new TypeError('data must be an object');
     }
-    const obj = Object.fromEntries(data);
-    return JSON.stringify(obj);
+    return JSON.stringify(toPlainObject(data));
   }
 }

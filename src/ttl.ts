@@ -1,4 +1,4 @@
-import type { HashField } from '@/typings.ts';
+import type { HashField } from '@/typings';
 
 export type TTL = {
   type: 'key' | 'list' | 'hash';
@@ -17,4 +17,4 @@ export type TTL = {
     }
 );
 
-export type SerializedTTL = { key: string } & TTL;
+export type SerializedTTL = { key: HashField } & TTL;

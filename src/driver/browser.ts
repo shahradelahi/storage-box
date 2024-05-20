@@ -1,58 +1,68 @@
-import type { IStorageDrive, Serializable, StorageType } from '@/typings.ts';
+import { HashRecord, StorageDriver } from '@/typings';
+
+type StorageType = 'local' | 'session';
 
 function getStorage(type: StorageType): Storage {
   if (typeof window === 'undefined') {
-    throw new Error('This driver can only be used in the browser');
+    throw new Error('Browser storage not available');
   }
 
-  if (type === 'local') {
-    return localStorage;
-  } else {
-    return sessionStorage;
-  }
+  return type === 'local' ? localStorage : sessionStorage;
 }
 
-export default class BrowserDriver implements IStorageDrive {
+export interface BrowserDriverOptions {
+  initialValue?: HashRecord<string, string>;
+}
+
+export default class BrowserDriver<Key extends string = string, Value extends string = string>
+  implements StorageDriver<Key, Value>
+{
   protected readonly _storage: Storage;
 
-  constructor(type: StorageType) {
-    const storage = getStorage(type);
+  constructor(type: StorageType, opts: BrowserDriverOptions = {}) {
+    const { initialValue } = opts;
 
+    const storage = getStorage(type);
     if (!storage) {
       throw new Error('Storage not available');
     }
 
     this._storage = storage;
-  }
 
-  async get(key: string): Promise<Serializable | undefined> {
-    const value = this._storage.getItem(key);
-    if (value === null) {
-      return undefined;
+    if (initialValue) {
+      Object.entries(initialValue).forEach(([key, value]) => {
+        this._storage.setItem(key, value.toString());
+      });
     }
-    return value;
   }
 
-  async set(key: string, value: Serializable): Promise<void> {
+  async get(key: Key): Promise<Value | null> {
+    return this._storage.getItem(key) as Value | null;
+  }
+
+  async set(key: Key, value: Value): Promise<void> {
     // If value was undefined or null we should remove the key
     if (value === undefined || value === null) {
-      await this.del(key);
-      return;
+      return this.del(key);
     }
 
-    this._storage.setItem(key, value.toString());
+    this._storage.setItem(key, String(value).toString());
   }
 
-  async del(key: string): Promise<void> {
+  async del(key: Key): Promise<void> {
     this._storage.removeItem(key);
   }
 
-  async exists(key: string): Promise<boolean> {
+  async exists(key: Key): Promise<boolean> {
     return this._storage.getItem(key) !== null;
   }
 
-  async keys(): Promise<string[]> {
-    return Object.keys(this._storage);
+  async keys(): Promise<Key[]> {
+    return Object.keys(this._storage) as Key[];
+  }
+
+  async values(): Promise<Value[]> {
+    return Object.values(this._storage) as Value[];
   }
 
   /**

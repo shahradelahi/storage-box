@@ -1,9 +1,11 @@
-import { JsonMap, MSGPack } from 'storage-box';
 import { expect } from 'chai';
+
+import { JsonMap } from '@/parser/json-map';
+import { MSGPack } from '@/parser/msg-pack';
 
 const data = {
   foo: 'bar',
-  bar: 'baz'
+  bar: 'baz',
 };
 
 describe('JSON-MAP', () => {
@@ -33,13 +35,16 @@ describe('MSGPack-MAP', () => {
     const hashMap = new Map<string, string>();
     hashMap.set('foo', 'bar');
     hashMap.set('bar', 'baz');
-    const msgPack = MSGPack.stringify(hashMap);
-    expect(isBase64(msgPack)).to.be.true;
+    const b64 = MSGPack.stringify(hashMap);
+    expect(isBase64(b64)).to.be.true;
+    expect(b64.length, b64).to.be.greaterThan(6);
   });
 
   it('parse', () => {
-    const msgPack = MSGPack.stringify(new Map(Object.entries(data)));
-    const hashMap = MSGPack.parse(msgPack);
+    const b64 = MSGPack.stringify(new Map(Object.entries(data)));
+    expect(b64.length, b64).to.be.greaterThan(6);
+
+    const hashMap = MSGPack.parse(b64);
     expect(hashMap.get('foo')).to.equal('bar');
     expect(hashMap.get('bar')).to.equal('baz');
   });

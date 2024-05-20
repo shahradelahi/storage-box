@@ -1,7 +1,10 @@
 {
+  "$schema": "https://json.schemastore.org/prettierrc",
   "useTabs": false,
+  "semi": true,
   "singleQuote": true,
-  "trailingComma": "none",
+  "trailingComma": "es5",
+  "endOfLine": "lf",
   "printWidth": 100,
   "overrides": [
     {
@@ -12,5 +15,15 @@
         "printWidth": 79
       }
     }
-  ]
+  ],
+  "importOrder": [
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^types$",
+    "^@/(.*)$",
+    "^@/tests/(.*)$",
+    "",
+    "^[./]"
+  ],
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"]
 }

@@ -2,22 +2,37 @@
   "name": "storage-box",
   "version": "0.3.1",
   "description": "A memory-based key–value storage for javascript.",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
   "files": [
     "dist/**"
   ],
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./node": {
+      "import": "./dist/node.js",
+      "require": "./dist/node.cjs"
+    },
+    "./browser": {
+      "import": "./dist/browser.js",
+      "require": "./dist/browser.cjs"
+    }
+  },
+  "types": "./dist",
+  "typesVersions": {
+    "*": {
+      "node": [
+        "dist/node.d.cts",
+        "dist/node.d.ts"
+      ],
+      "browser": [
+        "dist/browser.d.cts",
+        "dist/browser.d.ts"
+      ]
     }
   },
   "scripts": {
@@ -25,19 +40,20 @@
     "build": "tsup",
     "test": "mocha \"**/*.test.ts\"",
     "type-check": "tsc --noEmit",
-    "format:check": "prettier --check \"**/*.{ts,md}\"",
+    "format:check": "prettier --check .",
     "format": "prettier --write .",
     "ci:publish": "pnpm build && changeset publish",
-    "prepublishOnly": "pnpm test && pnpm run format:check && pnpm run type-check && pnpm build"
+    "prepublishOnly": "pnpm test && pnpm format:check && pnpm type-check && pnpm build"
   },
   "packageManager": "pnpm@8.15.7",
   "dependencies": {
     "@msgpack/msgpack": "3.0.0-beta2",
-    "debounce": "^2.0.0",
-    "path": "^0.12.7"
+    "debounce": "^2.0.0"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
+    "@sindresorhus/tsconfig": "^5.0.0",
     "@types/chai": "^4.3.16",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.12.10",

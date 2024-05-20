@@ -2,65 +2,99 @@
 
 On this page, you can find examples of using the memory-based driver.
 
-### Table of Contents
+## Table of Contents
 
 - [Usage](#usage)
 - [Key/Value Operations](#keyvalue-operations)
-  - [Set](#set)
-  - [Get](#get)
-  - [Delete](#delete)
-  - [Clear](#clear)
-  - [Exists/Has](#existshas)
-  - [Size](#size)
-  - [Keys](#keys)
+  - [set](#set)
+  - [get](#get)
+  - [getall](#getall)
+  - [delete](#delete)
+  - [clear](#clear)
+  - [exists](#exists)
+  - [size](#size)
+  - [keys](#keys)
+  - [values](#values)
 - [Time-based Key Expiration](#time-based-key-expiration)
-  - [Setex](#setex)
-  - [Ttl](#ttl)
+  - [setex](#setex)
+  - [hsetex](#hsetex)
+  - [lsetex](#lsetex)
+  - [TTL](#ttl)
+- [Hash Operations](#hash-operations)
+  - [createHashMap](#createhashmap)
+    - [abstract HashMap](#abstract-hashmap)
+  - [hset](#hset)
+  - [hget](#hget)
+  - [hgetall](#hgetall)
+  - [hkeys](#hkeys)
+  - [hvalues](#hvalues)
+  - [hdel](#hdel)
+  - [hexists](#hexists)
+  - [hsize](#hsize)
+  - [hclear](#hclear)
+- [List Operations](#list-operations)
+  - [createList](#createlist)
+    - [abstract List](#abstract-list)
+  - [lpush](#lpush)
+  - [lpop](#lpop)
+  - [lrange](#lrange)
+  - [lset](#lset)
+  - [lrem](#lrem)
+  - [lclear](#lclear)
+  - [lsize](#lsize)
+  - [lget](#lget)
+  - [lgetall](#lgetall)
 
-### Usage
+## Usage
 
-This is the default diver for the `storage-box` package and no further configuration is required.
+This is the default diver of the `storage-box` package, No further configuration is required.
 
 ```typescript
 import { Client } from 'storage-box';
 
-const client = new Client();
+const c = new Client();
 ```
 
-### Key/Value Operations
+## Key/Value Operations
 
-##### Set
+##### set
 
 ```typescript
 await client.set('key', 'value');
 ```
 
-##### Get
+##### get
 
 ```typescript
 const value = await client.get('key');
 ```
 
-##### Delete
+##### getall
+
+```typescript
+const objs = await client.getall();
+```
+
+##### delete
 
 ```typescript
 await client.del('key');
 ```
 
-##### Clear
+##### clear
 
 ```typescript
 await client.clear();
 ```
 
-##### Exists/Has
+##### exists
 
 ```typescript
 const exists = await client.exists('key');
 const has = await client.has('key'); // has is an alias for exists
 ```
 
-##### Size
+##### size
 
 Length of the storage
 
@@ -68,13 +102,19 @@ Length of the storage
 const size = await client.size();
 ```
 
-##### Keys
+##### keys
 
 ```typescript
 const keys = await client.keys();
 ```
 
-### Time-based Key Expiration
+##### values
+
+```typescript
+const values = await client.values();
+```
+
+## Time-based Key Expiration
 
 ##### Setex
 
@@ -82,11 +122,116 @@ const keys = await client.keys();
 await client.setex('key', 'value', 10); // 10 seconds
 ```
 
-##### Ttl
+##### TTL
 
 Returns the remaining time in seconds
 
 ```typescript
 const ttl = await client.ttl('key');
 const ttlMs = await client.ttl('key', true); // Returns the remaining time in milliseconds
+```
+
+## Hash Operations
+
+### createHashMap
+
+```typescript
+interface Vertex {
+  x: number;
+  y: number;
+}
+
+const hash = client.createHashMap<string, Vertex>();
+```
+
+#### Abstract HashMap
+
+```typescript
+import { expect } from 'chai';
+import type { JsonObject } from 'storage-box';
+
+interface CuteUser extends JsonObject {
+  first: string;
+  last: string;
+}
+
+class CuteMap extends HashMap<string, CuteUser> {
+  async addUser(user: CuteUser) {
+    const randId = Math.random().toString(36).slice(2);
+    await this.set(randId, user);
+  }
+
+  async initials(): Promise<string[]> {
+    const all = await this.getall();
+    return Object.values(all).map((u) => `${u.first[0]}${u.last[0]}`);
+  }
+}
+
+const cuties = client.createHashMap(CuteMap);
+
+await cuties.addUser({ first: 'Mary', last: 'Jane' });
+await cuties.addUser({ first: 'Peter', last: 'Parker' });
+
+const initials = await cuties.initials();
+expect(initials).to.have.members(['MJ', 'PP']);
+```
+
+### hset
+
+```typescript
+await client.hset('key', 'field', 'value');
+```
+
+### hget
+
+```typescript
+const value = await client.hget('key', 'field');
+```
+
+### hgetall
+
+```typescript
+const map = await client.hgetall('key');
+```
+
+### hsetex
+
+```typescript
+await client.hsetex('key', 'field', 'value', 10); // 10 seconds
+```
+
+### hkeys
+
+```typescript
+const keys = await client.hkeys('key');
+```
+
+### hvalues
+
+```typescript
+const values = await client.hvalues('key');
+```
+
+### hdel
+
+```typescript
+await client.hdel('key', 'field');
+```
+
+### hexists
+
+```typescript
+const exists = await client.hexists('key', 'field');
+```
+
+### hsize
+
+```typescript
+const size = await client.hsize('key');
+```
+
+### hclear
+
+```typescript
+await client.hclear('key');
 ```

@@ -1,20 +1,23 @@
-export interface IOperations extends HashOperations, ListOperations {
-  ///
-  // Basic key-value operations
-  ///
-  get(key: string): Promise<Serializable | null>;
-  set(key: string, value: Serializable | null): Promise<void>;
-  del(key: string): Promise<void>;
-  exists(key: string): Promise<boolean>;
-  has(key: string): Promise<boolean>;
-  keys(): Promise<string[]>;
-  clear(): Promise<void>;
+export type StorageOperations = KVOperations &
+  HashOperations &
+  ListOperations & {
+    ttl(key: string): Promise<number>;
+  };
 
-  ///
-  // Timed keys
-  ///
-  setex(key: string, value: Serializable, seconds: number): Promise<void>;
-  ttl(key: string): Promise<number>;
+export interface KVOperations<
+  Key extends HashField = string,
+  Value extends HashValue = Serializable,
+> {
+  get(key: Key): Promise<Value | null>;
+  set(key: Key, value: Value | null): Promise<void>;
+  setex(key: Key, value: Value, seconds: number): Promise<void>;
+  del(key: Key): Promise<void>;
+  exists(key: Key): Promise<boolean>;
+  has(key: Key): Promise<boolean>;
+  keys(): Promise<Key[]>;
+  values(): Promise<Value[]>;
+  clear(): Promise<void>;
+  getall(): Promise<HashRecord<Key, Value>>;
 }
 
 /**
@@ -34,27 +37,30 @@ export interface HashOperations {
 /**
  * List operations
  */
-export interface ListOperations {
-  list(key: string): Promise<SerializableList>;
-  lset(key: string, index: number, value: Serializable | null): Promise<void>;
-  lsetex(key: string, index: number, value: Serializable, seconds: number): Promise<void>;
-  lget(key: string, index: number): Promise<Serializable | null>;
+export interface ListOperations<Value extends HashValue = HashValue> {
+  lset(key: string, index: number, value: Value | null): Promise<void>;
+  lsetex(key: string, index: number, value: Value, seconds: number): Promise<void>;
+  lget(key: string, index: number): Promise<Value | null>;
   ldel(key: string, index: number): Promise<void>;
-  lpush(key: string, value: Serializable): Promise<void>;
-  lpop(key: string): Promise<Serializable | undefined>;
+  lpush(key: string, value: Value): Promise<void>;
+  lpop(key: string): Promise<Value | null>;
   lsize(key: string): Promise<number>;
   lclear(key: string): Promise<void>;
-  lrange(key: string, start: number, stop: number): Promise<SerializableList>;
+  lrange(key: string, start: number, stop: number): Promise<Value[]>;
+  lgetall(key: string): Promise<Value[]>;
 }
 
-export interface IStorageDrive {
+export interface StorageDriver<
+  Key extends HashField = HashField,
+  Value extends HashValue = HashValue,
+> {
   prepare?(): Promise<void>;
-
-  get(key: string): Promise<Serializable | SerializableList | undefined>;
-  set(key: string, value: Serializable | SerializableList): Promise<void>;
-  del(key: string): Promise<void>;
-  exists(key: string): Promise<boolean>;
-  keys(): Promise<string[]>;
+  get(key: Key): Promise<Value | null>;
+  set(key: Key, value: Value): Promise<void>;
+  del(key: Key): Promise<void>;
+  exists(key: Key): Promise<boolean>;
+  keys(): Promise<Key[]>;
+  values(): Promise<Value[]>;
   clear(): Promise<void>;
 }
 
@@ -68,7 +74,17 @@ export type StorageState = 'pending' | 'ready';
 // ---------------------
 
 export type HashField = string | number;
-export type HashRecord = Record<HashField, Serializable>;
+export type HashValue = Serializable | SerializableList;
+
+/** Alias to `HashField` */
+export type HashKey = HashField;
+
+export type HashRecord<
+  Key extends string | number | symbol = HashField,
+  Value extends Serializable | SerializableList = HashValue,
+> = {
+  [key in Key]: Value;
+};
 
 // ---------------------
 
@@ -77,7 +93,7 @@ export type ParserParseFn = (value: any) => Map<string, Serializable>;
 
 // ---------------------
 
-export type StorageType = 'local' | 'session';
+export type Class<T> = new (...args: any[]) => T;
 
 // ---------------------
 

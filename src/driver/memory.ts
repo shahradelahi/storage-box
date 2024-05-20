@@ -1,38 +1,54 @@
-import { JsonMap, SerializableList } from '@/index.ts';
-import type { IStorageDrive, Serializable } from '@/typings.ts';
+import { HashField, HashRecord, HashValue, StorageDriver } from '@/index';
 
-export default class MemoryDriver implements IStorageDrive {
-  protected _storage: Map<string, Serializable | SerializableList>;
+export interface MemoryDriverOptions<Key extends HashField, Value extends HashValue> {
+  initialValue?: HashRecord<Key, Value>;
+}
 
-  constructor(storage?: Map<string, Serializable>) {
-    if (storage) {
-      this._storage = JsonMap.parse(storage);
-    } else {
-      this._storage = new Map();
+export default class MemoryDriver<
+  Key extends HashField = HashField,
+  Value extends HashValue = HashValue,
+> implements StorageDriver<Key, Value>
+{
+  protected _storage: HashRecord<Key, Value> = {} as HashRecord<Key, Value>;
+
+  constructor(options: MemoryDriverOptions<Key, Value> = {}) {
+    if (options.initialValue) {
+      Object.assign(this._storage, options.initialValue);
     }
   }
 
-  async get(key: string) {
-    return this._storage.get(key);
+  async get(key: Key): Promise<Value | null> {
+    const hasKey = await this.exists(key);
+    if (!hasKey) {
+      return null;
+    }
+    return this._storage[key];
   }
 
-  async set(key: string, value: Serializable) {
-    this._storage.set(key, value);
+  async set(key: Key, value: Value) {
+    this._storage[key] = value;
   }
 
-  async del(key: string) {
-    this._storage.delete(key);
+  async del(key: Key) {
+    const hasKey = await this.exists(key);
+    if (hasKey) {
+      delete this._storage[key];
+    }
   }
 
-  async exists(key: string) {
-    return this._storage.has(key);
+  async exists(key: Key) {
+    return key in this._storage;
   }
 
-  async keys() {
-    return Array.from(this._storage.keys());
+  async keys(): Promise<Key[]> {
+    return Object.keys(this._storage) as Key[];
+  }
+
+  async values(): Promise<Value[]> {
+    return Object.values(this._storage);
   }
 
   async clear() {
-    this._storage.clear();
+    this._storage = {} as HashRecord<Key, Value>;
   }
 }

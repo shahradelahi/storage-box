@@ -26,3 +26,24 @@ export function removeUndefined<T extends object>(obj: T): T {
   }
   return result;
 }
+
+export function toPlainObject<T extends object>(obj: T): T {
+  let newObj = {} as T;
+  if (typeof obj !== 'object') {
+    throw new TypeError('Cannot convert ' + typeof obj + ' to object');
+  }
+
+  if (obj instanceof Map) {
+    return fromMap(obj);
+  }
+
+  for (const [key, value] of Object.entries(obj)) {
+    Object.defineProperty(newObj, key, {
+      value,
+      enumerable: true,
+      configurable: true,
+    });
+  }
+
+  return newObj;
+}

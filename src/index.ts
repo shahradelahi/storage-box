@@ -1,18 +1,14 @@
-export { Client } from './client.ts';
+export { Client } from './client';
+export { HashMap } from './hash-map';
 
 // -----------
 
-export { default as MemoryDriver } from './driver/memory.ts';
-
-export { default as FsDriver } from './driver/fs.ts';
-export type { FsOptions } from './driver/fs.ts';
-
-export { default as BrowserDriver } from './driver/browser.ts';
+export { default as MemoryDriver } from './driver/memory';
 
 // -----------
 
-export { JsonMap } from '@/parser/json-map.ts';
-export { MSGPack } from '@/parser/msg-pack.ts';
+export { JsonMap } from '@/parser/json-map';
+export { MSGPack } from '@/parser/msg-pack';
 
 // -----------
 
@@ -23,8 +19,8 @@ export function isBase64(data: any): boolean {
   );
 }
 
-export * as ObjectUtil from '@/utils/object.ts';
+export * as ObjectUtil from '@/utils/object';
 
 // -----------
 
-export type * from '@/typings.ts';
+export type * from '@/typings';
