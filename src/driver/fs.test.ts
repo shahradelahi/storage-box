@@ -8,7 +8,7 @@ import { MSGPack } from '@/parser/msg-pack';
 import { sleep } from '@/tests/utils';
 
 describe('Fs-based storage', () => {
-  const filePath = resolve(process.cwd(), 'tests', 'test.json');
+  const filePath = resolve('tests', 'output', 'test.json');
 
   const drive = new FsDriver(filePath);
   const client = new Client(drive);
@@ -34,7 +34,7 @@ describe('Fs-based storage', () => {
   });
 
   describe('Time-based', () => {
-    const filePath = resolve(process.cwd(), 'tests', 'test.json');
+    const filePath = resolve('tests', 'output', 'test.json');
 
     it('create a key with expiration and reload again', async () => {
       {
@@ -54,7 +54,7 @@ describe('Fs-based storage', () => {
   });
 
   describe('MSGPack Parser', () => {
-    const filePath = resolve(process.cwd(), 'tests', 'test.b64');
+    const filePath = resolve('tests', 'output', 'test.b64');
 
     const drive = new FsDriver(filePath, { parser: MSGPack });
     const client = new Client(drive);
