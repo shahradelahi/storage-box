@@ -9,6 +9,8 @@ import { rename, writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { access } from '@/utils/fs-extra';
+
 // Returns a temporary file
 // Example: for /some/file will return /some/.file.tmp
 function getTempFilename(file: PathLike): string {
@@ -44,9 +46,9 @@ interface FileWriterOptions {
 }
 
 export class FileWriter {
-  #filename: PathLike;
-  #tempFilename: PathLike;
-  #encoding: BufferEncoding = 'utf-8';
+  readonly #filename: PathLike;
+  readonly #tempFilename: PathLike;
+  readonly #encoding: BufferEncoding = 'utf-8';
   #locked = false;
   #prev: [Resolve, Reject] | null = null;
   #next: [Resolve, Reject] | null = null;
@@ -78,7 +80,9 @@ export class FileWriter {
       await writeFile(this.#tempFilename, data, this.#encoding);
       await retryAsyncOperation(
         async () => {
-          await rename(this.#tempFilename, this.#filename);
+          if (await access(this.#tempFilename)) {
+            await rename(this.#tempFilename, this.#filename);
+          }
         },
         10,
         100
