@@ -9,7 +9,7 @@ import { Client } from 'storage-box';
 
 const c = new Client();
 
-const nl = c.createHashMap<number>();
+const nl = c.createList<number>();
 for (let i = 0; i < 10; i++) {
   nl.push(i);
 }
