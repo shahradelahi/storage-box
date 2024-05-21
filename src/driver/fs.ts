@@ -1,29 +1,23 @@
-import { PathLike, promises } from 'node:fs';
-import { basename, dirname, join, resolve } from 'node:path';
+import { promises } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url';
 import debounce, { type DebouncedFunction } from 'debounce';
 
 import { JsonMap, MemoryDriver } from '@/index';
 import type { IStorageParser, Serializable } from '@/typings';
+import { FileWriter } from '@/utils/file-writer';
 import { access } from '@/utils/fs-extra';
 
 export interface FsOptions {
   parser?: IStorageParser;
-  /** Encoding for the file. */
+  /** Encoding for the file. (default `utf-8`) */
   encoding?: BufferEncoding;
   debounceTime?: number;
 }
 
-// Returns a temporary file
-// Example: for /some/file will return /some/.file.tmp
-function getTempFilename(file: PathLike): string {
-  const f = file instanceof URL ? fileURLToPath(file) : file.toString();
-  return join(dirname(f), `.${basename(f)}.tmp`);
-}
-
 export default class FsDriver extends MemoryDriver {
   private readonly _path: string;
+  private readonly _writer: FileWriter;
   private readonly _parser: IStorageParser;
   private readonly _debounceTime: number;
   private readonly _bouncyWriteFn: DebouncedFunction<() => Promise<void>>;
@@ -38,9 +32,16 @@ export default class FsDriver extends MemoryDriver {
     this._debounceTime = debounceTime || 1;
     this._bouncyWriteFn = debounce(this.write, this._debounceTime);
     this._encoding = opts.encoding || 'utf-8';
+    this._writer = new FileWriter(this._path, { encoding: this._encoding });
   }
 
   async prepare() {
+    // Try to create a recursive
+    const fileDir = dirname(this._path);
+    if (!(await access(fileDir))) {
+      await promises.mkdir(fileDir, { recursive: true });
+    }
+
     if (await access(this._path)) {
       const rawData = await promises.readFile(this._path, this._encoding);
       const parser = this._parser;
@@ -63,9 +64,7 @@ export default class FsDriver extends MemoryDriver {
 
   async write(): Promise<void> {
     const data = this._parser.stringify(this._storage);
-    const tmp = getTempFilename(this._path);
-    await promises.writeFile(tmp, data, this._encoding);
-    await promises.rename(tmp, this._path);
+    await this._writer.write(data);
   }
 
   override async set(key: string, value: Serializable): Promise<void> {
