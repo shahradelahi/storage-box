@@ -28,7 +28,7 @@ export function removeUndefined<T extends object>(obj: T): T {
 }
 
 export function toPlainObject<T extends object>(obj: T): T {
-  let newObj = {} as T;
+  const newObj = {} as T;
   if (typeof obj !== 'object') {
     throw new TypeError('Cannot convert ' + typeof obj + ' to object');
   }

@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import { promises } from 'node:fs';
 import { resolve } from 'node:path';
 import { expect } from 'chai';
 
@@ -8,7 +8,7 @@ import { MSGPack } from '@/parser/msg-pack';
 import { sleep } from '@/tests/utils';
 
 describe('Fs-based storage', () => {
-  const filePath = resolve(process.cwd(), 'tests', 'test.json');
+  const filePath = resolve('tests', 'output', 'test.json');
 
   const drive = new FsDriver(filePath);
   const client = new Client(drive);
@@ -17,8 +17,8 @@ describe('Fs-based storage', () => {
     client.clear();
   });
 
-  after(() => {
-    fs.unlinkSync(filePath);
+  after(async () => {
+    await promises.unlink(filePath).catch(() => {});
   });
 
   it('Set and get', async () => {
@@ -34,7 +34,11 @@ describe('Fs-based storage', () => {
   });
 
   describe('Time-based', () => {
-    const filePath = resolve(process.cwd(), 'tests', 'test.json');
+    const filePath = resolve('tests', 'output', 'test.json');
+
+    after(async () => {
+      await promises.unlink(filePath).catch(() => {});
+    });
 
     it('create a key with expiration and reload again', async () => {
       {
@@ -54,13 +58,17 @@ describe('Fs-based storage', () => {
   });
 
   describe('MSGPack Parser', () => {
-    const filePath = resolve(process.cwd(), 'tests', 'test.b64');
+    const filePath = resolve('tests', 'output', 'test.b64');
 
     const drive = new FsDriver(filePath, { parser: MSGPack });
     const client = new Client(drive);
 
     beforeEach(() => {
       client.clear();
+    });
+
+    after(async () => {
+      await promises.unlink(filePath).catch(() => {});
     });
 
     it('Set and get', async () => {
