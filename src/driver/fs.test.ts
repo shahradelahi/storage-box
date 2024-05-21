@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import { promises } from 'node:fs';
 import { resolve } from 'node:path';
 import { expect } from 'chai';
 
@@ -17,8 +17,8 @@ describe('Fs-based storage', () => {
     client.clear();
   });
 
-  after(() => {
-    fs.unlinkSync(filePath);
+  after(async () => {
+    await promises.unlink(filePath).catch(() => {});
   });
 
   it('Set and get', async () => {
@@ -35,6 +35,10 @@ describe('Fs-based storage', () => {
 
   describe('Time-based', () => {
     const filePath = resolve('tests', 'output', 'test.json');
+
+    after(async () => {
+      await promises.unlink(filePath).catch(() => {});
+    });
 
     it('create a key with expiration and reload again', async () => {
       {
@@ -61,6 +65,10 @@ describe('Fs-based storage', () => {
 
     beforeEach(() => {
       client.clear();
+    });
+
+    after(async () => {
+      await promises.unlink(filePath).catch(() => {});
     });
 
     it('Set and get', async () => {
