@@ -27,6 +27,14 @@ export class List<Value extends HashValue = HashValue> {
     return this._client.lpush(this._key, value);
   }
 
+  pushex(value: Value, seconds: number): Promise<void> {
+    return this._client.lpushex(this._key, value, seconds);
+  }
+
+  exists(value: Value): Promise<boolean> {
+    return this._client.lexists(this._key, value);
+  }
+
   pop(): Promise<Value | null> {
     return this._client.lpop(this._key) as Promise<Value | null>;
   }
