@@ -303,6 +303,20 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
     await this._drive.set(key, list);
   }
 
+  async lpushex(key: HashKey, value: Serializable, seconds: number): Promise<void> {
+    const list = await this._get_list(key);
+    list.push(value);
+    await this._drive.set(key, list);
+    const secs = seconds * 1000;
+    const delAt = Date.now() + secs;
+    await this._create_ldel_timout(key, list.length - 1, delAt);
+  }
+
+  async lexists(key: HashKey, value: Serializable): Promise<boolean> {
+    const list = await this._get_list(key);
+    return list.includes(value);
+  }
+
   /**
    * Removes and returns the last element of the list stored at key.
    *
@@ -445,11 +459,6 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
     await this._drive.set(key, value);
     const secs = seconds * 1000;
     const delAt = Date.now() + secs;
-    // setTimeout(() => {
-    //   this._drive.del(key);
-    //   this._ttl.delete(key);
-    // }, secs);
-    // this._set_ttl(key, delAt);
     await this._create_del_timout(key, delAt);
   }
 
