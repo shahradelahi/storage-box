@@ -2,6 +2,7 @@ import { expect } from 'chai';
 
 import { Client } from '@/client';
 import { List } from '@/list';
+import { sleep } from '@/tests/utils';
 
 const c = new Client();
 
@@ -37,6 +38,23 @@ describe('List', () => {
 
       const median = await list.median();
       expect(median).to.equal(2);
+    });
+  });
+
+  describe('Time-based', () => {
+    it('pushex', async () => {
+      const list = c.createList();
+      await list.pushex(1, 1);
+      await list.pushex(2, 1);
+      await list.pushex(3, 1);
+
+      expect(await list.toArray()).to.have.length(3);
+      expect(await list.toArray()).to.have.members([1, 2, 3]);
+
+      await sleep(1000);
+
+      expect(await list.toArray()).to.have.length(3);
+      expect(await list.toArray()).to.have.members([null, null, null]);
     });
   });
 });

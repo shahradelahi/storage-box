@@ -48,23 +48,28 @@ describe('In-Memory', () => {
     });
 
     it('Set and get', async () => {
-      await client.setex('foo', 'bar', 1);
+      await client.setex('foo', 'bar', 3);
       expect(await client.get('foo')).to.equal('bar');
-      await sleep(1100);
+      await sleep(1000);
+      expect(await client.get('foo')).to.equal('bar');
+
+      await sleep(2000);
       expect(await client.get('foo')).to.be.null;
     });
 
     it('List - set and get', async () => {
-      await client.lpush('foo', 'bar');
-      await client.lpush('foo', 'foo');
-      await client.lpush('foo', 'baz');
-      await client.lsetex('foo', 1, 'bar', 1);
+      await client.lpushex('list', 'bar', 2);
+      await client.lpush('list', 'foo');
+      await client.lpush('list', 'baz');
+      await client.lsetex('list', 1, 'bar', 1);
 
-      expect(await client.lget('foo', 1)).to.equal('bar');
+      expect(await client.lget('list', 1)).to.equal('bar');
 
-      await sleep(1100);
+      await sleep(1000);
+      expect(await client.lget('list', 1)).to.be.null;
 
-      expect(await client.lget('foo', 1)).to.be.null;
+      await sleep(1000);
+      expect(await client.lget('list', 0)).to.be.null;
     });
 
     it('Hash - Time-based set and get', async () => {
