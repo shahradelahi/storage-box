@@ -19,7 +19,7 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
   private readonly _drive: StorageDriver;
 
   private readonly _ttl: Map<HashField, TTL> = new Map();
-  private _state: StorageState = 'pending';
+  private _state: StorageState = 'stale';
 
   constructor(storage?: Driver) {
     this._drive = storage || new MemoryDriver();
@@ -27,6 +27,8 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
   }
 
   private async _prepare() {
+    this._state = 'pending';
+
     if (this._drive.prepare) {
       await this._drive.prepare();
     }
@@ -43,7 +45,10 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
     // Wait til driver is ready
     return new Promise<void>((resolve) => {
       const intervalId = setInterval(() => {
-        if (this._state === 'ready') {
+        if (this._state === 'stale') {
+          this._state = 'pending';
+          this._prepare().finally();
+        } else if (this._state === 'ready') {
           clearInterval(intervalId);
           resolve();
         }

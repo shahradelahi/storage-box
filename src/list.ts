@@ -7,6 +7,15 @@ export class List<Value extends HashValue = HashValue> {
     private readonly _key: HashKey
   ) {}
 
+  [Symbol.asyncIterator]() {
+    const pList = this.list();
+    return (async function* (): AsyncGenerator<Value> {
+      for (const item of await pList) {
+        yield item;
+      }
+    })();
+  }
+
   set(index: number, value: Value | null): Promise<void> {
     return this._client.lset(this._key, index, value);
   }

@@ -69,7 +69,7 @@ export interface IStorageParser {
   parse(value: any): Map<string, Serializable>;
 }
 
-export type StorageState = 'pending' | 'ready';
+export type StorageState = 'stale' | 'pending' | 'ready';
 
 // ---------------------
 

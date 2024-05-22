@@ -28,6 +28,17 @@ describe('List', () => {
     expect(await list.toArray()).to.have.members([1, 2, 3]);
   });
 
+  it('Async iteration', async () => {
+    const list = c.createList();
+    await list.push(1);
+    await list.push(2);
+    await list.push(3);
+
+    for await (const item of list) {
+      expect(item).to.be.oneOf([1, 2, 3]);
+    }
+  });
+
   describe('Lucky Numbers', () => {
     const list = c.createList(LuckyNumberList);
 

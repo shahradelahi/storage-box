@@ -1,6 +1,6 @@
 {
   "name": "storage-box",
-  "version": "1.0.0-canary.3",
+  "version": "1.0.0-canary.4",
   "description": "A memory-based key–value storage for javascript.",
   "type": "module",
   "main": "dist/index.cjs",
