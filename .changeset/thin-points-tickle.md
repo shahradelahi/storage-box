@@ -15,5 +15,5 @@ interface Vertex {
 }
 
 const vhm = c.createHashMap<string, Vertex>();
-await vhm.set('a', { x: 1, y: 2 });
+vhm.set('a', { x: 1, y: 2 });
 ```

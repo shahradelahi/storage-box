@@ -1,5 +1,5 @@
 ---
-'storage-box': minor
+'storage-box': major
 ---
 
-fix: methods are now sync. keyword `await` is no longer needed.
+fix: Operation methods are now synchronous. The keyword `await` is no longer needed.
