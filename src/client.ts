@@ -15,29 +15,28 @@ import type {
 } from '@/typings';
 
 class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOperations {
-  private readonly _drive: StorageDriver;
-
-  private readonly _ttl: Map<HashField, TTL> = new Map();
+  readonly #drive: StorageDriver;
+  readonly #ttl: Map<HashField, TTL> = new Map();
 
   constructor(storage?: Driver) {
-    this._drive = storage || new MemoryDriver();
-    this._load_ttl();
+    this.#drive = storage || new MemoryDriver();
+    this.#load_ttl();
   }
 
   getall(): HashRecord {
     const record: HashRecord = {};
-    for (const key of this._drive.keys()) {
+    for (const key of this.#drive.keys()) {
       record[key] = this.get(key);
     }
     return record;
   }
 
   get<Value extends HashValue>(key: HashField): Value | null {
-    const ttl = this._ttl.get(key);
+    const ttl = this.#ttl.get(key);
 
     // Return if ttl is not set or not expired
     if (!ttl || ttl.dat > Date.now()) {
-      const val = this._drive.get(key) as Value;
+      const val = this.#drive.get(key) as Value;
       return val ?? null;
     }
 
@@ -47,22 +46,22 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
 
     if (ttl.type === 'list') {
       // Delete key from TTL list due to TTL mismatch
-      this._ttl.delete(key);
+      this.#ttl.delete(key);
     }
 
     return null;
   }
 
   set(key: HashKey, value: Serializable | null) {
-    this._drive.set(key, value);
+    this.#drive.set(key, value);
   }
 
   del(key: HashKey) {
-    this._drive.del(key);
+    this.#drive.del(key);
   }
 
   exists(key: HashKey) {
-    return this._drive.exists(key);
+    return this.#drive.exists(key);
   }
 
   has(key: HashKey) {
@@ -70,32 +69,32 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
   }
 
   keys<Key extends HashKey = string>(): Key[] {
-    return this._drive.keys() as Key[];
+    return this.#drive.keys() as Key[];
   }
 
   values<Value extends HashValue>() {
     const vals: Value[] = [];
-    for (const key of this._drive.keys()) {
+    for (const key of this.#drive.keys()) {
       vals.push(this.get(key) as Value);
     }
     return vals;
   }
 
   clear() {
-    this._drive.clear();
+    this.#drive.clear();
   }
 
   ////
   // Hash operations
   ////
 
-  private _get_hash(key: HashKey): HashRecord {
-    if (!this._drive.exists(key)) {
-      this._drive.set(key, {});
+  #get_hash(key: HashKey): HashRecord {
+    if (!this.#drive.exists(key)) {
+      this.#drive.set(key, {});
       return {};
     }
 
-    const map = this._drive.get(key) as HashRecord | null;
+    const map = this.#drive.get(key) as HashRecord | null;
     if (!map) {
       return {};
     }
@@ -108,57 +107,57 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
   }
 
   hget(key: HashKey, field: HashField) {
-    const map = this._get_hash(key);
+    const map = this.#get_hash(key);
     return map[field] ?? null;
   }
 
   hset(key: HashKey, field: HashField, value: Serializable) {
-    const map = this._get_hash(key);
+    const map = this.#get_hash(key);
     map[field] = value;
-    this._drive.set(key, map);
+    this.#drive.set(key, map);
   }
 
   hsetex(key: HashKey, field: HashField, value: Serializable, seconds: number) {
-    const map = this._get_hash(key);
+    const map = this.#get_hash(key);
     map[field] = value;
-    this._drive.set(key, map);
+    this.#drive.set(key, map);
     const secs = seconds * 1000;
     const delAt = Date.now() + secs;
-    this._create_hdel_timout(key, field, delAt);
+    this.#create_hdel_timout(key, field, delAt);
   }
 
   hkeys(key: HashKey) {
-    const map = this._get_hash(key);
+    const map = this.#get_hash(key);
     return Object.keys(map);
   }
 
   hvalues(key: HashKey) {
-    const map = this._get_hash(key);
+    const map = this.#get_hash(key);
     return Object.values(map);
   }
 
   hdel(key: HashKey, field: HashField) {
-    const map = this._get_hash(key);
+    const map = this.#get_hash(key);
     delete map[field];
-    this._drive.set(key, map);
+    this.#drive.set(key, map);
   }
 
   hexists(key: HashKey, field: HashField) {
-    const map = this._get_hash(key);
+    const map = this.#get_hash(key);
     return field in map;
   }
 
   hsize(key: HashKey) {
-    const map = this._get_hash(key);
+    const map = this.#get_hash(key);
     return Object.keys(map).length;
   }
 
   hclear(key: HashKey) {
-    this._drive.set(key, {});
+    this.#drive.set(key, {});
   }
 
   hgetall<Key extends HashField, Value extends HashValue>(key: string): HashRecord<Key, Value> {
-    const map = this._get_hash(key);
+    const map = this.#get_hash(key);
     return map as HashRecord<Key, Value>;
   }
 
@@ -196,12 +195,12 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
   // List operations
   ////
 
-  private _get_list(key: HashField): SerializableList {
-    if (!this._drive.exists(key)) {
-      this._drive.set(key, []);
+  #get_list(key: HashField): SerializableList {
+    if (!this.#drive.exists(key)) {
+      this.#drive.set(key, []);
     }
 
-    const list = this._drive.get(key); // Not using this.get() to avoid TTL check
+    const list = this.#drive.get(key); // Not using this.get() to avoid TTL check
     if (!list) {
       return [];
     }
@@ -214,20 +213,20 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
   }
 
   lgetall(key: HashKey) {
-    return this._get_list(key);
+    return this.#get_list(key);
   }
 
   lset(key: HashField, index: number, value: Serializable | null) {
-    const list = this._get_list(key);
+    const list = this.#get_list(key);
     list[index] = value;
-    this._drive.set(key, list);
+    this.#drive.set(key, list);
   }
 
   lget(key: HashField, index: number): HashValue | null {
-    const ttl = this._ttl.get(key);
+    const ttl = this.#ttl.get(key);
 
     if (!ttl || ttl.dat > Date.now()) {
-      const list = this._get_list(key);
+      const list = this.#get_list(key);
       return list[index] as HashValue;
     }
 
@@ -237,35 +236,35 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
 
     if (ttl.type === 'key') {
       // TTL mismatch with the key, delete the key from the TTL list
-      this._ttl.delete(key);
+      this.#ttl.delete(key);
     }
 
     return null;
   }
 
   ldel(key: HashKey, index: number) {
-    const list = this._get_list(key);
+    const list = this.#get_list(key);
     list.splice(index, 1);
-    this._drive.set(key, list);
+    this.#drive.set(key, list);
   }
 
   lpush(key: HashKey, value: Serializable): void {
-    const list = this._get_list(key);
+    const list = this.#get_list(key);
     list.push(value);
-    this._drive.set(key, list);
+    this.#drive.set(key, list);
   }
 
   lpushex(key: HashKey, value: Serializable, seconds: number): void {
-    const list = this._get_list(key);
+    const list = this.#get_list(key);
     list.push(value);
-    this._drive.set(key, list);
+    this.#drive.set(key, list);
     const secs = seconds * 1000;
     const delAt = Date.now() + secs;
-    this._create_ldel_timout(key, list.length - 1, delAt);
+    this.#create_ldel_timout(key, list.length - 1, delAt);
   }
 
   lexists(key: HashKey, value: Serializable): boolean {
-    const list = this._get_list(key);
+    const list = this.#get_list(key);
     return list.includes(value);
   }
 
@@ -275,17 +274,17 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
    * @param key - The key of the list.
    */
   lpop(key: HashKey): HashValue | null {
-    const list = this._get_list(key);
+    const list = this.#get_list(key);
     return list.pop() ?? null;
   }
 
   lsize(key: HashKey) {
-    const list = this._get_list(key);
+    const list = this.#get_list(key);
     return list.length;
   }
 
   lclear(key: HashKey) {
-    this._drive.set(key, []);
+    this.#drive.set(key, []);
   }
 
   /**
@@ -296,32 +295,32 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
    * @param stop - The index to end the slice at.
    */
   lrange(key: HashKey, start: number, stop: number): HashValue[] {
-    const list = this._get_list(key);
+    const list = this.#get_list(key);
     return list.slice(start, stop);
   }
 
-  private _load_ttl() {
-    const ttlList = this._drive.get(TTL_LIST_KEY) as SerializedTTL[] | undefined;
+  #load_ttl() {
+    const ttlList = this.#drive.get(TTL_LIST_KEY) as SerializedTTL[] | undefined;
     if (!ttlList || !Array.isArray(ttlList)) {
       // TTL list malformed, clear it
-      return this._drive.del(TTL_LIST_KEY);
+      return this.#drive.del(TTL_LIST_KEY);
     }
 
     ttlList.map(({ key, dat, ...rest }) => {
       // If the key does not exist, remove it from the TTL list
-      if (!this._drive.exists(key)) {
-        this._ttl.delete(key);
+      if (!this.#drive.exists(key)) {
+        this.#ttl.delete(key);
         return;
       }
 
       // If the key has already expired, remove it from the TTL list
       if (!dat || dat < Date.now()) {
-        this._drive.del(key);
-        this._ttl.delete(key);
+        this.#drive.del(key);
+        this.#ttl.delete(key);
         return;
       }
 
-      this._ttl.set(key, {
+      this.#ttl.set(key, {
         dat,
         ...rest,
       });
@@ -329,13 +328,13 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
       // Set the timeout for the key
       switch (rest.type) {
         case 'key':
-          this._create_del_timout(key, dat);
+          this.#create_del_timout(key, dat);
           break;
         case 'list':
-          this._create_ldel_timout(key, rest.index, dat);
+          this.#create_ldel_timout(key, rest.index, dat);
           break;
         case 'hash':
-          this._create_hdel_timout(key, rest.field, dat);
+          this.#create_hdel_timout(key, rest.field, dat);
           break;
         default:
           throw new Error('TTL malformed at key: ' + key);
@@ -343,56 +342,56 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
     });
   }
 
-  private _create_del_timout(key: HashField, dat: number) {
+  #create_del_timout(key: HashField, dat: number) {
     const timeLeft = dat - Date.now();
     setTimeout(() => {
-      this._drive.del(key);
-      this._ttl.delete(key);
+      this.#drive.del(key);
+      this.#ttl.delete(key);
     }, timeLeft);
 
-    this._ttl.set(key, {
+    this.#ttl.set(key, {
       type: 'key',
       dat,
     });
 
-    this._update_ttl_list();
+    this.#update_ttl_list();
   }
 
-  private _create_ldel_timout(key: HashField, index: number, dat: number) {
+  #create_ldel_timout(key: HashField, index: number, dat: number) {
     const timeLeft = dat - Date.now();
     setTimeout(() => {
       this.lset(key, index, null);
-      this._ttl.delete(key);
+      this.#ttl.delete(key);
     }, timeLeft);
 
-    this._ttl.set(key, {
+    this.#ttl.set(key, {
       type: 'list',
       index,
       dat,
     });
 
-    this._update_ttl_list();
+    this.#update_ttl_list();
   }
 
-  private _create_hdel_timout(key: HashField, field: HashField, dat: number) {
+  #create_hdel_timout(key: HashField, field: HashField, dat: number) {
     const timeLeft = dat - Date.now();
     setTimeout(() => {
       this.hset(key, field, null);
-      this._ttl.delete(key);
+      this.#ttl.delete(key);
     }, timeLeft);
 
-    this._ttl.set(key, {
+    this.#ttl.set(key, {
       type: 'hash',
       field,
       dat,
     });
 
-    this._update_ttl_list();
+    this.#update_ttl_list();
   }
 
-  private _update_ttl_list() {
+  #update_ttl_list() {
     const ttlList: SerializedTTL[] = [];
-    this._ttl.forEach((ttl, key) => {
+    this.#ttl.forEach((ttl, key) => {
       ttlList.push(Object.assign(ttl, { key }));
     });
     this.set(TTL_LIST_KEY, ttlList);
@@ -406,10 +405,10 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
    * @param seconds
    */
   setex(key: HashKey, value: Serializable, seconds: number) {
-    this._drive.set(key, value);
+    this.#drive.set(key, value);
     const secs = seconds * 1000;
     const delAt = Date.now() + secs;
-    this._create_del_timout(key, delAt);
+    this.#create_del_timout(key, delAt);
   }
 
   /**
@@ -421,12 +420,12 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
    * @param seconds
    */
   lsetex(key: HashKey, index: number, value: Serializable, seconds: number) {
-    const list = this._get_list(key);
+    const list = this.#get_list(key);
     list[index] = value;
-    this._drive.set(key, list);
+    this.#drive.set(key, list);
     const secs = seconds * 1000;
     const delAt = Date.now() + secs;
-    this._create_ldel_timout(key, index, delAt);
+    this.#create_ldel_timout(key, index, delAt);
   }
 
   /**
@@ -438,7 +437,7 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
    * @param milliseconds If true, returns the remaining time in milliseconds.
    */
   ttl(key: HashKey, milliseconds?: boolean) {
-    const item = this._ttl.get(key);
+    const item = this.#ttl.get(key);
     if (!item) {
       return -1;
     }
