@@ -17,38 +17,38 @@ export default class MemoryDriver<
     }
   }
 
-  async get(key: Key): Promise<Value | null> {
-    const hasKey = await this.exists(key);
+  get(key: Key): Value | null {
+    const hasKey = this.exists(key);
     if (!hasKey) {
       return null;
     }
     return this._storage[key];
   }
 
-  async set(key: Key, value: Value) {
+  set(key: Key, value: Value) {
     this._storage[key] = value;
   }
 
-  async del(key: Key) {
-    const hasKey = await this.exists(key);
+  del(key: Key) {
+    const hasKey = this.exists(key);
     if (hasKey) {
       delete this._storage[key];
     }
   }
 
-  async exists(key: Key) {
+  exists(key: Key) {
     return key in this._storage;
   }
 
-  async keys(): Promise<Key[]> {
+  keys(): Key[] {
     return Object.keys(this._storage) as Key[];
   }
 
-  async values(): Promise<Value[]> {
+  values(): Value[] {
     return Object.values(this._storage);
   }
 
-  async clear() {
+  clear() {
     this._storage = {} as HashRecord<Key, Value>;
   }
 }

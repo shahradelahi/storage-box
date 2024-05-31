@@ -12,130 +12,89 @@ import type {
   SerializableList,
   StorageDriver,
   StorageOperations,
-  StorageState,
 } from '@/typings';
 
 class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOperations {
-  private readonly _drive: StorageDriver;
-
-  private readonly _ttl: Map<HashField, TTL> = new Map();
-  private _state: StorageState = 'stale';
+  readonly #drive: StorageDriver;
+  readonly #ttl: Map<HashField, TTL> = new Map();
 
   constructor(storage?: Driver) {
-    this._drive = storage || new MemoryDriver();
-    this._prepare().finally();
+    this.#drive = storage || new MemoryDriver();
+    this.#load_ttl();
   }
 
-  private async _prepare() {
-    this._state = 'pending';
-
-    if (this._drive.prepare) {
-      await this._drive.prepare();
-    }
-
-    await this._load_ttl();
-    this._state = 'ready';
-  }
-
-  private async _preparedDriver() {
-    if (this._state === 'ready') {
-      return;
-    }
-
-    // Wait til driver is ready
-    return new Promise<void>((resolve) => {
-      const intervalId = setInterval(() => {
-        if (this._state === 'stale') {
-          this._state = 'pending';
-          this._prepare().finally();
-        } else if (this._state === 'ready') {
-          clearInterval(intervalId);
-          resolve();
-        }
-      }, 1);
-    });
-  }
-
-  async getall(): Promise<HashRecord> {
-    await this._preparedDriver();
+  getall(): HashRecord {
     const record: HashRecord = {};
-    for (const key of await this._drive.keys()) {
-      record[key] = await this.get(key);
+    for (const key of this.#drive.keys()) {
+      record[key] = this.get(key);
     }
     return record;
   }
 
-  async get<Value extends HashValue>(key: HashField): Promise<Value | null> {
-    await this._preparedDriver();
-
-    const ttl = this._ttl.get(key);
+  get<Value extends HashValue>(key: HashField): Value | null {
+    const ttl = this.#ttl.get(key);
 
     // Return if ttl is not set or not expired
     if (!ttl || ttl.dat > Date.now()) {
-      return ((await this._drive.get(key)) as Value) ?? null;
+      const val = this.#drive.get(key) as Value;
+      return val ?? null;
     }
 
     if (ttl.type === 'key') {
-      await this.del(key);
+      this.del(key);
     }
 
     if (ttl.type === 'list') {
       // Delete key from TTL list due to TTL mismatch
-      this._ttl.delete(key);
+      this.#ttl.delete(key);
     }
 
     return null;
   }
 
-  async set(key: HashKey, value: Serializable | null) {
-    await this._preparedDriver();
-    await this._drive.set(key, value);
+  set(key: HashKey, value: Serializable | null) {
+    this.#drive.set(key, value);
   }
 
-  async del(key: HashKey) {
-    await this._preparedDriver();
-    await this._drive.del(key);
+  del(key: HashKey) {
+    this.#drive.del(key);
   }
 
-  async exists(key: HashKey) {
-    await this._preparedDriver();
-    return this._drive.exists(key);
+  exists(key: HashKey) {
+    return this.#drive.exists(key);
   }
 
-  async has(key: HashKey) {
+  has(key: HashKey) {
     return this.exists(key);
   }
 
-  async keys<Key extends HashKey = string>(): Promise<Key[]> {
-    await this._preparedDriver();
-    return (await this._drive.keys()) as Key[];
+  keys<Key extends HashKey = string>(): Key[] {
+    return this.#drive.keys() as Key[];
   }
 
-  async values<Value extends HashValue>() {
-    await this._preparedDriver();
+  values<Value extends HashValue>() {
     const vals: Value[] = [];
-    for (const key of await this._drive.keys()) {
-      vals.push((await this.get(key)) as Value);
+    for (const key of this.#drive.keys()) {
+      vals.push(this.get(key) as Value);
     }
     return vals;
   }
 
-  async clear() {
-    await this._preparedDriver();
-    await this._drive.clear();
+  clear() {
+    this.#drive.clear();
   }
 
   ////
   // Hash operations
   ////
 
-  private async _get_hash(key: HashKey) {
-    if (!(await this._drive.exists(key))) {
-      await this._drive.set(key, {});
+  #get_hash(key: HashKey): HashRecord {
+    if (!this.#drive.exists(key)) {
+      this.#drive.set(key, {});
       return {};
     }
 
-    const map = (await this._drive.get(key)) as Record<HashField, Serializable>;
+    const map = this.#drive.get(key) as HashRecord | null;
     if (!map) {
       return {};
     }
@@ -147,71 +106,58 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
     return map;
   }
 
-  async hget(key: HashKey, field: HashField) {
-    await this._preparedDriver();
-
-    const map = await this._get_hash(key);
+  hget(key: HashKey, field: HashField) {
+    const map = this.#get_hash(key);
     return map[field] ?? null;
   }
 
-  async hset(key: HashKey, field: HashField, value: Serializable) {
-    await this._preparedDriver();
-    const map = await this._get_hash(key);
+  hset(key: HashKey, field: HashField, value: Serializable) {
+    const map = this.#get_hash(key);
     map[field] = value;
-    await this._drive.set(key, map);
+    this.#drive.set(key, map);
   }
 
-  async hsetex(key: HashKey, field: HashField, value: Serializable, seconds: number) {
-    await this._preparedDriver();
-    const map = await this._get_hash(key);
+  hsetex(key: HashKey, field: HashField, value: Serializable, seconds: number) {
+    const map = this.#get_hash(key);
     map[field] = value;
-    await this._drive.set(key, map);
+    this.#drive.set(key, map);
     const secs = seconds * 1000;
     const delAt = Date.now() + secs;
-    await this._create_hdel_timout(key, field, delAt);
+    this.#create_hdel_timout(key, field, delAt);
   }
 
-  async hkeys(key: HashKey) {
-    await this._preparedDriver();
-    const map = await this._get_hash(key);
+  hkeys(key: HashKey) {
+    const map = this.#get_hash(key);
     return Object.keys(map);
   }
 
-  async hvalues(key: HashKey) {
-    await this._preparedDriver();
-    const map = await this._get_hash(key);
+  hvalues(key: HashKey) {
+    const map = this.#get_hash(key);
     return Object.values(map);
   }
 
-  async hdel(key: HashKey, field: HashField) {
-    await this._preparedDriver();
-    const map = await this._get_hash(key);
+  hdel(key: HashKey, field: HashField) {
+    const map = this.#get_hash(key);
     delete map[field];
-    await this._drive.set(key, map);
+    this.#drive.set(key, map);
   }
 
-  async hexists(key: HashKey, field: HashField) {
-    await this._preparedDriver();
-    const map = await this._get_hash(key);
+  hexists(key: HashKey, field: HashField) {
+    const map = this.#get_hash(key);
     return field in map;
   }
 
-  async hsize(key: HashKey) {
-    await this._preparedDriver();
-    const map = await this._get_hash(key);
+  hsize(key: HashKey) {
+    const map = this.#get_hash(key);
     return Object.keys(map).length;
   }
 
-  async hclear(key: HashKey) {
-    await this._preparedDriver();
-    await this._drive.set(key, {});
+  hclear(key: HashKey) {
+    this.#drive.set(key, {});
   }
 
-  async hgetall<Key extends HashField, Value extends HashValue>(
-    key: string
-  ): Promise<HashRecord<Key, Value>> {
-    await this._preparedDriver();
-    const map = await this._get_hash(key);
+  hgetall<Key extends HashField, Value extends HashValue>(key: string): HashRecord<Key, Value> {
+    const map = this.#get_hash(key);
     return map as HashRecord<Key, Value>;
   }
 
@@ -249,12 +195,12 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
   // List operations
   ////
 
-  private async _get_list(key: HashField): Promise<SerializableList> {
-    if (!(await this._drive.exists(key))) {
-      await this._drive.set(key, []);
+  #get_list(key: HashField): SerializableList {
+    if (!this.#drive.exists(key)) {
+      this.#drive.set(key, []);
     }
 
-    const list = await this._drive.get(key); // Not using this.get() to avoid TTL check
+    const list = this.#drive.get(key); // Not using this.get() to avoid TTL check
     if (!list) {
       return [];
     }
@@ -266,59 +212,59 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
     return list as SerializableList;
   }
 
-  async lgetall(key: HashKey) {
-    return this._get_list(key);
+  lgetall(key: HashKey) {
+    return this.#get_list(key);
   }
 
-  async lset(key: HashField, index: number, value: Serializable | null) {
-    const list = await this._get_list(key);
+  lset(key: HashField, index: number, value: Serializable | null) {
+    const list = this.#get_list(key);
     list[index] = value;
-    await this._drive.set(key, list);
+    this.#drive.set(key, list);
   }
 
-  async lget(key: HashField, index: number): Promise<HashValue | null> {
-    const ttl = this._ttl.get(key);
+  lget(key: HashField, index: number): HashValue | null {
+    const ttl = this.#ttl.get(key);
 
     if (!ttl || ttl.dat > Date.now()) {
-      const list = await this._get_list(key);
+      const list = this.#get_list(key);
       return list[index] as HashValue;
     }
 
     if (ttl.type === 'list') {
-      await this.lset(key, ttl.index, null);
+      this.lset(key, ttl.index, null);
     }
 
     if (ttl.type === 'key') {
       // TTL mismatch with the key, delete the key from the TTL list
-      this._ttl.delete(key);
+      this.#ttl.delete(key);
     }
 
     return null;
   }
 
-  async ldel(key: HashKey, index: number) {
-    const list = await this._get_list(key);
+  ldel(key: HashKey, index: number) {
+    const list = this.#get_list(key);
     list.splice(index, 1);
-    await this._drive.set(key, list);
+    this.#drive.set(key, list);
   }
 
-  async lpush(key: HashKey, value: Serializable): Promise<void> {
-    const list = await this._get_list(key);
+  lpush(key: HashKey, value: Serializable): void {
+    const list = this.#get_list(key);
     list.push(value);
-    await this._drive.set(key, list);
+    this.#drive.set(key, list);
   }
 
-  async lpushex(key: HashKey, value: Serializable, seconds: number): Promise<void> {
-    const list = await this._get_list(key);
+  lpushex(key: HashKey, value: Serializable, seconds: number): void {
+    const list = this.#get_list(key);
     list.push(value);
-    await this._drive.set(key, list);
+    this.#drive.set(key, list);
     const secs = seconds * 1000;
     const delAt = Date.now() + secs;
-    await this._create_ldel_timout(key, list.length - 1, delAt);
+    this.#create_ldel_timout(key, list.length - 1, delAt);
   }
 
-  async lexists(key: HashKey, value: Serializable): Promise<boolean> {
-    const list = await this._get_list(key);
+  lexists(key: HashKey, value: Serializable): boolean {
+    const list = this.#get_list(key);
     return list.includes(value);
   }
 
@@ -327,18 +273,18 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
    *
    * @param key - The key of the list.
    */
-  async lpop(key: HashKey): Promise<HashValue | null> {
-    const list = await this._get_list(key);
+  lpop(key: HashKey): HashValue | null {
+    const list = this.#get_list(key);
     return list.pop() ?? null;
   }
 
-  async lsize(key: HashKey) {
-    const list = await this._get_list(key);
+  lsize(key: HashKey) {
+    const list = this.#get_list(key);
     return list.length;
   }
 
-  async lclear(key: HashKey) {
-    await this._drive.set(key, []);
+  lclear(key: HashKey) {
+    this.#drive.set(key, []);
   }
 
   /**
@@ -348,109 +294,107 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
    * @param start - The index to start the slice at.
    * @param stop - The index to end the slice at.
    */
-  async lrange(key: HashKey, start: number, stop: number): Promise<HashValue[]> {
-    const list = await this._get_list(key);
+  lrange(key: HashKey, start: number, stop: number): HashValue[] {
+    const list = this.#get_list(key);
     return list.slice(start, stop);
   }
 
-  private async _load_ttl() {
-    const ttlList = (await this._drive.get(TTL_LIST_KEY)) as SerializedTTL[] | undefined;
+  #load_ttl() {
+    const ttlList = this.#drive.get(TTL_LIST_KEY) as SerializedTTL[] | undefined;
     if (!ttlList || !Array.isArray(ttlList)) {
       // TTL list malformed, clear it
-      return this._drive.del(TTL_LIST_KEY);
+      return this.#drive.del(TTL_LIST_KEY);
     }
 
-    await Promise.all(
-      ttlList.map(async ({ key, dat, ...rest }) => {
-        // If the key does not exist, remove it from the TTL list
-        if (!(await this._drive.exists(key))) {
-          this._ttl.delete(key);
-          return;
-        }
+    ttlList.map(({ key, dat, ...rest }) => {
+      // If the key does not exist, remove it from the TTL list
+      if (!this.#drive.exists(key)) {
+        this.#ttl.delete(key);
+        return;
+      }
 
-        // If the key has already expired, remove it from the TTL list
-        if (!dat || dat < Date.now()) {
-          await this._drive.del(key);
-          this._ttl.delete(key);
-          return;
-        }
+      // If the key has already expired, remove it from the TTL list
+      if (!dat || dat < Date.now()) {
+        this.#drive.del(key);
+        this.#ttl.delete(key);
+        return;
+      }
 
-        this._ttl.set(key, {
-          dat,
-          ...rest,
-        });
+      this.#ttl.set(key, {
+        dat,
+        ...rest,
+      });
 
-        // Set the timeout for the key
-        switch (rest.type) {
-          case 'key':
-            await this._create_del_timout(key, dat);
-            break;
-          case 'list':
-            await this._create_ldel_timout(key, rest.index, dat);
-            break;
-          case 'hash':
-            await this._create_hdel_timout(key, rest.field, dat);
-            break;
-          default:
-            throw new Error('TTL malformed at key: ' + key);
-        }
-      })
-    );
+      // Set the timeout for the key
+      switch (rest.type) {
+        case 'key':
+          this.#create_del_timout(key, dat);
+          break;
+        case 'list':
+          this.#create_ldel_timout(key, rest.index, dat);
+          break;
+        case 'hash':
+          this.#create_hdel_timout(key, rest.field, dat);
+          break;
+        default:
+          throw new Error('TTL malformed at key: ' + key);
+      }
+    });
   }
 
-  private async _create_del_timout(key: HashField, dat: number) {
+  #create_del_timout(key: HashField, dat: number) {
     const timeLeft = dat - Date.now();
     setTimeout(() => {
-      this._drive.del(key);
-      this._ttl.delete(key);
+      this.#drive.del(key);
+      this.#ttl.delete(key);
     }, timeLeft);
 
-    this._ttl.set(key, {
+    this.#ttl.set(key, {
       type: 'key',
       dat,
     });
 
-    await this._update_ttl_list();
+    this.#update_ttl_list();
   }
 
-  private async _create_ldel_timout(key: HashField, index: number, dat: number) {
+  #create_ldel_timout(key: HashField, index: number, dat: number) {
     const timeLeft = dat - Date.now();
     setTimeout(() => {
       this.lset(key, index, null);
-      this._ttl.delete(key);
+      this.#ttl.delete(key);
     }, timeLeft);
 
-    this._ttl.set(key, {
+    this.#ttl.set(key, {
       type: 'list',
       index,
       dat,
     });
 
-    await this._update_ttl_list();
+    this.#update_ttl_list();
   }
 
-  private async _create_hdel_timout(key: HashField, field: HashField, dat: number) {
+  #create_hdel_timout(key: HashField, field: HashField, dat: number) {
     const timeLeft = dat - Date.now();
     setTimeout(() => {
       this.hset(key, field, null);
-      this._ttl.delete(key);
+      this.#ttl.delete(key);
     }, timeLeft);
 
-    this._ttl.set(key, {
+    this.#ttl.set(key, {
       type: 'hash',
       field,
       dat,
     });
 
-    await this._update_ttl_list();
+    this.#update_ttl_list();
   }
 
-  private async _update_ttl_list() {
+  #update_ttl_list() {
     const ttlList: SerializedTTL[] = [];
-    this._ttl.forEach((ttl, key) => {
+    this.#ttl.forEach((ttl, key) => {
       ttlList.push(Object.assign(ttl, { key }));
     });
-    await this.set(TTL_LIST_KEY, ttlList);
+    this.set(TTL_LIST_KEY, ttlList);
   }
 
   /**
@@ -460,11 +404,11 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
    * @param value
    * @param seconds
    */
-  async setex(key: HashKey, value: Serializable, seconds: number) {
-    await this._drive.set(key, value);
+  setex(key: HashKey, value: Serializable, seconds: number) {
+    this.#drive.set(key, value);
     const secs = seconds * 1000;
     const delAt = Date.now() + secs;
-    await this._create_del_timout(key, delAt);
+    this.#create_del_timout(key, delAt);
   }
 
   /**
@@ -475,13 +419,13 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
    * @param value
    * @param seconds
    */
-  async lsetex(key: HashKey, index: number, value: Serializable, seconds: number) {
-    const list = await this._get_list(key);
+  lsetex(key: HashKey, index: number, value: Serializable, seconds: number) {
+    const list = this.#get_list(key);
     list[index] = value;
-    await this._drive.set(key, list);
+    this.#drive.set(key, list);
     const secs = seconds * 1000;
     const delAt = Date.now() + secs;
-    await this._create_ldel_timout(key, index, delAt);
+    this.#create_ldel_timout(key, index, delAt);
   }
 
   /**
@@ -492,8 +436,8 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
    * @param key
    * @param milliseconds If true, returns the remaining time in milliseconds.
    */
-  async ttl(key: HashKey, milliseconds?: boolean) {
-    const item = this._ttl.get(key);
+  ttl(key: HashKey, milliseconds?: boolean) {
+    const item = this.#ttl.get(key);
     if (!item) {
       return -1;
     }

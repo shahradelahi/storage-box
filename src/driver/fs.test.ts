@@ -18,19 +18,19 @@ describe('Fs-based storage', () => {
   });
 
   after(async () => {
-    await promises.unlink(filePath).catch(() => {});
+    promises.unlink(filePath).catch(() => {});
   });
 
-  it('Set and get', async () => {
-    await client.set('foo', 'bar');
-    await client.set('bar', 'baz');
-    expect(await client.get('foo')).to.equal('bar');
+  it('Set and get', () => {
+    client.set('foo', 'bar');
+    client.set('bar', 'baz');
+    expect(client.get('foo')).to.equal('bar');
   });
 
-  it('Delete', async () => {
-    await client.set('foo', 'bar');
-    await client.del('foo');
-    expect(await client.get('foo')).to.be.null;
+  it('Delete', () => {
+    client.set('foo', 'bar');
+    client.del('foo');
+    expect(client.get('foo')).to.be.null;
   });
 
   describe('Time-based', () => {
@@ -45,14 +45,14 @@ describe('Fs-based storage', () => {
         const drive = new FsDriver(filePath);
         const client = new Client(drive);
 
-        await client.setex('foo', 'bar', 2);
+        client.setex('foo', 'bar', 2);
       }
       await sleep(2001);
       {
         const drive = new FsDriver(filePath);
         const client = new Client(drive);
 
-        expect(await client.exists('foo')).to.false;
+        expect(client.exists('foo')).to.false;
       }
     });
   });
@@ -71,20 +71,20 @@ describe('Fs-based storage', () => {
       await promises.unlink(filePath).catch(() => {});
     });
 
-    it('Set and get', async () => {
-      await client.set('foo', 'bar');
-      await client.set('bar', 'baz');
-      expect(await client.get('foo')).to.equal('bar');
+    it('Set and get', () => {
+      client.set('foo', 'bar');
+      client.set('bar', 'baz');
+      expect(client.get('foo')).to.equal('bar');
     });
 
-    it('Delete', async () => {
-      await client.setex('foo', 'bar', 1);
-      await client.setex('bar', 'baz', 1);
-      await client.set('foo', 'bar');
+    it('Delete', () => {
+      client.setex('foo', 'bar', 1);
+      client.setex('bar', 'baz', 1);
+      client.set('foo', 'bar');
 
-      await client.del('foo');
+      client.del('foo');
 
-      expect(await client.get('foo')).to.be.null;
+      expect(client.get('foo')).to.be.null;
     });
   });
 });

@@ -1,5 +1,6 @@
 export { Client } from './client';
 export { HashMap } from './hash-map';
+export { List } from './list';
 
 // -----------
 

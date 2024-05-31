@@ -60,38 +60,38 @@ const c = new Client();
 ##### set
 
 ```typescript
-await client.set('key', 'value');
+client.set('key', 'value');
 ```
 
 ##### get
 
 ```typescript
-const value = await client.get('key');
+const value = client.get('key');
 ```
 
 ##### getall
 
 ```typescript
-const objs = await client.getall();
+const objs = client.getall();
 ```
 
 ##### delete
 
 ```typescript
-await client.del('key');
+client.del('key');
 ```
 
 ##### clear
 
 ```typescript
-await client.clear();
+client.clear();
 ```
 
 ##### exists
 
 ```typescript
-const exists = await client.exists('key');
-const has = await client.has('key'); // has is an alias for exists
+const exists = client.exists('key');
+const has = client.has('key'); // has is an alias for exists
 ```
 
 ##### size
@@ -99,19 +99,19 @@ const has = await client.has('key'); // has is an alias for exists
 Length of the storage
 
 ```typescript
-const size = await client.size();
+const size = client.size();
 ```
 
 ##### keys
 
 ```typescript
-const keys = await client.keys();
+const keys = client.keys();
 ```
 
 ##### values
 
 ```typescript
-const values = await client.values();
+const values = client.values();
 ```
 
 ## Time-based Key Expiration
@@ -119,7 +119,7 @@ const values = await client.values();
 ##### Setex
 
 ```typescript
-await client.setex('key', 'value', 10); // 10 seconds
+client.setex('key', 'value', 10); // 10 seconds
 ```
 
 ##### TTL
@@ -127,8 +127,8 @@ await client.setex('key', 'value', 10); // 10 seconds
 Returns the remaining time in seconds
 
 ```typescript
-const ttl = await client.ttl('key');
-const ttlMs = await client.ttl('key', true); // Returns the remaining time in milliseconds
+const ttl = client.ttl('key');
+const ttlMs = client.ttl('key', true); // Returns the remaining time in milliseconds
 ```
 
 ## Hash Operations
@@ -161,7 +161,7 @@ class CuteMap extends HashMap<string, CuteUser> {
     await this.set(randId, user);
   }
 
-  async initials(): Promise<string[]> {
+  async initials(): string[] {
     const all = await this.getall();
     return Object.values(all).map((u) => `${u.first[0]}${u.last[0]}`);
   }
@@ -179,59 +179,59 @@ expect(initials).to.have.members(['MJ', 'PP']);
 ### hset
 
 ```typescript
-await client.hset('key', 'field', 'value');
+client.hset('key', 'field', 'value');
 ```
 
 ### hget
 
 ```typescript
-const value = await client.hget('key', 'field');
+const value = client.hget('key', 'field');
 ```
 
 ### hgetall
 
 ```typescript
-const map = await client.hgetall('key');
+const map = client.hgetall('key');
 ```
 
 ### hsetex
 
 ```typescript
-await client.hsetex('key', 'field', 'value', 10); // 10 seconds
+client.hsetex('key', 'field', 'value', 10); // 10 seconds
 ```
 
 ### hkeys
 
 ```typescript
-const keys = await client.hkeys('key');
+const keys = client.hkeys('key');
 ```
 
 ### hvalues
 
 ```typescript
-const values = await client.hvalues('key');
+const values = client.hvalues('key');
 ```
 
 ### hdel
 
 ```typescript
-await client.hdel('key', 'field');
+client.hdel('key', 'field');
 ```
 
 ### hexists
 
 ```typescript
-const exists = await client.hexists('key', 'field');
+const exists = client.hexists('key', 'field');
 ```
 
 ### hsize
 
 ```typescript
-const size = await client.hsize('key');
+const size = client.hsize('key');
 ```
 
 ### hclear
 
 ```typescript
-await client.hclear('key');
+client.hclear('key');
 ```
