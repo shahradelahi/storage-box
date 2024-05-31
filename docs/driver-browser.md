@@ -11,12 +11,12 @@ import { BrowserDriver } from 'storage-box/browser';
 const driver = new BrowserDriver('local');
 const client = new Client(driver);
 
-await client.setex('key', 'value', 5);
+client.setex('key', 'value', 5);
 
-const value = await client.get('key');
+const value = client.get('key');
 
 console.log(value);
-setTimeout(async () => {
-  console.log(await client.get('key')); // undefined
+setTimeout(() => {
+  console.log(client.get('key')); // undefined
 }, 5000);
 ```

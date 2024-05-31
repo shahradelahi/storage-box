@@ -28,16 +28,16 @@ import { Client } from 'storage-box';
 
 const client = new Client();
 
-await client.setex('key', 'value', 2);
+client.setex('key', 'value', 2);
 
-console.log(await client.get('key')); // value
+console.log(client.get('key')); // value
 
 // time to live in milliseconds
-console.log(await client.ttl('key', true)); // 2000
+console.log(client.ttl('key', true)); // 2000
 
 // after 3 seconds
-setTimeout(async () => {
-  console.log(await client.get('key')); // undefined
+setTimeout(() => {
+  console.log(client.get('key')); // undefined
 }, 3e3);
 ```
 
