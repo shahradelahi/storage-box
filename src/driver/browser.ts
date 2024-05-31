@@ -2,14 +2,6 @@ import { HashRecord, StorageDriver } from '@/typings';
 
 type StorageType = 'local' | 'session';
 
-function getStorage(type: StorageType): Storage {
-  if (typeof window === 'undefined') {
-    throw new Error('Browser storage not available');
-  }
-
-  return type === 'local' ? localStorage : sessionStorage;
-}
-
 export interface BrowserDriverOptions {
   initialValue?: HashRecord<string, string>;
 }
@@ -22,7 +14,11 @@ export default class BrowserDriver<Key extends string = string, Value extends st
   constructor(type: StorageType, opts: BrowserDriverOptions = {}) {
     const { initialValue } = opts;
 
-    const storage = getStorage(type);
+    if (typeof window === 'undefined') {
+      throw new Error('Browser storage not available');
+    }
+
+    const storage = type === 'local' ? localStorage : sessionStorage;
     if (!storage) {
       throw new Error('Storage not available');
     }

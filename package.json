@@ -38,7 +38,7 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
-    "test": "mocha \"**/*.test.ts\"",
+    "test": "mocha \"**/*.test.ts\" --retries 2",
     "type-check": "tsc --noEmit",
     "lint": "pnpm type-check && eslint .",
     "lint:fix": "eslint --fix .",

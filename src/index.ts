@@ -5,6 +5,7 @@ export { List } from './list';
 // -----------
 
 export { default as MemoryDriver } from './driver/memory';
+export { default as BrowserDriver } from './driver/browser';
 
 // -----------
 
