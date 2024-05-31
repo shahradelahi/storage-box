@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync } from 'node:fs';
+import { mkdirSync, promises } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import process from 'node:process';
 import debounce, { type DebouncedFunction } from 'debounce';
@@ -34,6 +34,16 @@ export default class FsDriver extends MemoryDriver {
     this._encoding = opts.encoding || 'utf-8';
     this._writer = new FileWriter(this._path, { encoding: this._encoding });
 
+    this.prepare().catch(() => {
+      throw new Error('Failed to prepare storage');
+    });
+
+    process.on('beforeExit', () => {
+      this._bouncyWriteFn.flush();
+    });
+  }
+
+  async prepare() {
     // Try to create a recursive
     const fileDir = dirname(this._path);
     if (!access(fileDir)) {
@@ -41,7 +51,7 @@ export default class FsDriver extends MemoryDriver {
     }
 
     if (access(this._path)) {
-      const rawData = readFileSync(this._path, this._encoding);
+      const rawData = await promises.readFile(this._path, this._encoding);
       const parser = this._parser;
 
       const _storage = rawData === '' ? new Map<string, Serializable>() : parser.parse(rawData);
@@ -54,10 +64,6 @@ export default class FsDriver extends MemoryDriver {
         }
       });
     }
-
-    process.on('beforeExit', () => {
-      this._bouncyWriteFn.flush();
-    });
   }
 
   async write(): Promise<void> {
