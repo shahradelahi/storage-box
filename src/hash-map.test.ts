@@ -10,13 +10,13 @@ interface CuteUser extends JsonObject {
 }
 
 class CuteMap extends HashMap<string, CuteUser> {
-  async addUser(user: CuteUser) {
+  addUser(user: CuteUser) {
     const randId = Math.random().toString(36).slice(2);
-    await this.set(randId, user);
+    this.set(randId, user);
   }
 
-  async initials(): Promise<string[]> {
-    const all = await this.getall();
+  initials(): string[] {
+    const all = this.getall();
     return Object.values(all).map((u) => `${u.first[0]}${u.last[0]}`);
   }
 }
@@ -36,13 +36,13 @@ describe('HashMap', () => {
   });
 
   describe('CuteMap', () => {
-    it('get initials', async () => {
+    it('get initials', () => {
       const cuties = c.createHashMap('CuteHub', CuteMap);
 
-      await cuties.addUser({ first: 'Mary', last: 'Jane' });
-      await cuties.addUser({ first: 'Peter', last: 'Parker' });
+      cuties.addUser({ first: 'Mary', last: 'Jane' });
+      cuties.addUser({ first: 'Peter', last: 'Parker' });
 
-      const initials = await cuties.initials();
+      const initials = cuties.initials();
 
       expect(initials).to.have.members(['MJ', 'PP']);
     });

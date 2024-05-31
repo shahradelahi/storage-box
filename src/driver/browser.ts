@@ -36,11 +36,11 @@ export default class BrowserDriver<Key extends string = string, Value extends st
     }
   }
 
-  async get(key: Key): Promise<Value | null> {
+  get(key: Key): Value | null {
     return this._storage.getItem(key) as Value | null;
   }
 
-  async set(key: Key, value: Value): Promise<void> {
+  set(key: Key, value: Value): void {
     // If value was undefined or null we should remove the key
     if (value === undefined || value === null) {
       return this.del(key);
@@ -49,26 +49,26 @@ export default class BrowserDriver<Key extends string = string, Value extends st
     this._storage.setItem(key, String(value).toString());
   }
 
-  async del(key: Key): Promise<void> {
+  del(key: Key): void {
     this._storage.removeItem(key);
   }
 
-  async exists(key: Key): Promise<boolean> {
+  exists(key: Key): boolean {
     return this._storage.getItem(key) !== null;
   }
 
-  async keys(): Promise<Key[]> {
+  keys(): Key[] {
     return Object.keys(this._storage) as Key[];
   }
 
-  async values(): Promise<Value[]> {
+  values(): Value[] {
     return Object.values(this._storage) as Value[];
   }
 
   /**
    * Clears the storage. Please be careful with this method.
    */
-  async clear(): Promise<void> {
+  clear(): void {
     this._storage.clear();
   }
 }

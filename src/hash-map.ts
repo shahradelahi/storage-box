@@ -9,43 +9,43 @@ export class HashMap<Key extends HashField = HashField, Value extends HashValue 
     private readonly _key: string
   ) {}
 
-  get(key: Key): Promise<Value | null> {
+  get(key: Key): Value | null {
     return this._client.hget(this._key, key) as any;
   }
 
-  set(key: Key, value: Value): Promise<void> {
+  set(key: Key, value: Value): void {
     return this._client.hset(this._key, key, value);
   }
 
-  setex(key: Key, value: Value, seconds: number): Promise<void> {
+  setex(key: Key, value: Value, seconds: number): void {
     return this._client.hsetex(this._key, key, value, seconds);
   }
 
-  del(key: Key): Promise<void> {
+  del(key: Key): void {
     return this._client.hdel(this._key, key);
   }
 
-  exists(key: Key): Promise<boolean> {
+  exists(key: Key): boolean {
     return this._client.hexists(this._key, key);
   }
 
-  has(key: Key): Promise<boolean> {
+  has(key: Key): boolean {
     return this._client.hexists(this._key, key);
   }
 
-  keys(): Promise<Key[]> {
-    return this._client.hkeys(this._key) as Promise<Key[]>;
+  keys(): Key[] {
+    return this._client.hkeys(this._key) as Key[];
   }
 
-  values(): Promise<Value[]> {
-    return this._client.hvalues(this._key) as Promise<Value[]>;
+  values(): Value[] {
+    return this._client.hvalues(this._key) as Value[];
   }
 
-  clear(): Promise<void> {
+  clear(): void {
     return this._client.hclear(this._key);
   }
 
-  getall(): Promise<HashRecord<Key, Value>> {
+  getall(): HashRecord<Key, Value> {
     return this._client.hgetall(this._key);
   }
 }

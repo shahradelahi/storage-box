@@ -1,4 +1,4 @@
-import { promises } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import process from 'node:process';
 import debounce, { type DebouncedFunction } from 'debounce';
@@ -20,7 +20,7 @@ export default class FsDriver extends MemoryDriver {
   private readonly _writer: FileWriter;
   private readonly _parser: IStorageParser;
   private readonly _debounceTime: number;
-  private readonly _bouncyWriteFn: DebouncedFunction<() => Promise<void>>;
+  private readonly _bouncyWriteFn: DebouncedFunction<() => void>;
   private readonly _encoding: BufferEncoding;
 
   constructor(path: string, opts: FsOptions = {}) {
@@ -33,17 +33,15 @@ export default class FsDriver extends MemoryDriver {
     this._bouncyWriteFn = debounce(this.write, this._debounceTime);
     this._encoding = opts.encoding || 'utf-8';
     this._writer = new FileWriter(this._path, { encoding: this._encoding });
-  }
 
-  async prepare() {
     // Try to create a recursive
     const fileDir = dirname(this._path);
-    if (!(await access(fileDir))) {
-      await promises.mkdir(fileDir, { recursive: true });
+    if (!access(fileDir)) {
+      mkdirSync(fileDir, { recursive: true });
     }
 
-    if (await access(this._path)) {
-      const rawData = await promises.readFile(this._path, this._encoding);
+    if (access(this._path)) {
+      const rawData = readFileSync(this._path, this._encoding);
       const parser = this._parser;
 
       const _storage = rawData === '' ? new Map<string, Serializable>() : parser.parse(rawData);
@@ -57,7 +55,7 @@ export default class FsDriver extends MemoryDriver {
       });
     }
 
-    process.on('beforeExit', async () => {
+    process.on('beforeExit', () => {
       this._bouncyWriteFn.flush();
     });
   }
@@ -67,18 +65,18 @@ export default class FsDriver extends MemoryDriver {
     await this._writer.write(data);
   }
 
-  override async set(key: string, value: Serializable): Promise<void> {
-    await super.set(key, value);
+  override set(key: string, value: Serializable): void {
+    super.set(key, value);
     this._bouncyWriteFn();
   }
 
-  override async del(key: string): Promise<void> {
-    await super.del(key);
+  override del(key: string): void {
+    super.del(key);
     this._bouncyWriteFn();
   }
 
-  override async clear(): Promise<void> {
-    await super.clear();
+  override clear(): void {
+    super.clear();
     this._bouncyWriteFn();
   }
 }

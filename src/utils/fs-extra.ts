@@ -1,8 +1,8 @@
-import { promises, type PathLike } from 'node:fs';
+import { accessSync, type PathLike } from 'node:fs';
 
-export async function access(path: PathLike) {
+export function access(path: PathLike) {
   try {
-    await promises.access(path);
+    accessSync(path);
     return true;
   } catch {
     return false;
