@@ -1,9 +1,3 @@
-/**
- * @link https://github.com/typicode/steno/blob/7376d62410ec06e32ca18564d6b5c4b51f6aa14d/src/index.ts
- * @license MIT
- * @copyright Typicode
- */
-
 import { PathLike } from 'node:fs';
 import { rename, writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
@@ -45,6 +39,13 @@ interface FileWriterOptions {
   encoding?: BufferEncoding;
 }
 
+/**
+ * Steno — File Writer
+ *
+ * @link https://github.com/typicode/steno/blob/7376d62410ec06e32ca18564d6b5c4b51f6aa14d/src/index.ts
+ * @license MIT
+ * @copyright Typicode
+ */
 export class FileWriter {
   readonly #filename: PathLike;
   readonly #tempFilename: PathLike;
