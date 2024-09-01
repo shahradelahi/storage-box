@@ -177,7 +177,7 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
   >(key?: string | Class<Map>, abstract?: Class<Map>): Map {
     return this.#createInstance(
       typeof key !== 'string' ? undefined : key,
-      typeof key !== 'string' ? key ?? HashMap : (abstract as any) ?? HashMap
+      typeof key !== 'string' ? (key ?? HashMap) : ((abstract as any) ?? HashMap)
     );
   }
 
@@ -187,7 +187,7 @@ class Client<Driver extends StorageDriver = MemoryDriver> implements StorageOper
   ): _List {
     return this.#createInstance(
       typeof key !== 'string' ? undefined : key,
-      typeof key !== 'string' ? key ?? List : (abstract as any) ?? List
+      typeof key !== 'string' ? (key ?? List) : ((abstract as any) ?? List)
     );
   }
 

@@ -34,8 +34,8 @@ export default class FsDriver extends MemoryDriver {
     this._encoding = opts.encoding || 'utf-8';
     this._writer = new FileWriter(this._path, { encoding: this._encoding });
 
-    this.prepare().catch(() => {
-      throw new Error('Failed to prepare storage');
+    this.prepare().catch((err) => {
+      throw err;
     });
 
     process.on('beforeExit', () => {
