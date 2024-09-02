@@ -1,5 +1,11 @@
 # storage-box
 
+## 1.0.2
+
+### Patch Changes
+
+- b478417: fix: Trapping the exit signal in `FsDriver`
+
 ## 1.0.1
 
 ### Patch Changes
