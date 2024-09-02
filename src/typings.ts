@@ -1,3 +1,7 @@
+import type { JsonValue } from 'type-fest';
+
+// ---------------------
+
 export type StorageOperations = KVOperations &
   HashOperations &
   ListOperations & {
@@ -23,12 +27,15 @@ export interface KVOperations<
 /**
  * Hash operations
  */
-export interface HashOperations {
-  hget(key: string, field: HashField): Serializable | null;
-  hset(key: string, field: HashField, value: Serializable): void;
-  hsetex(key: string, field: HashField, value: Serializable, seconds: number): void;
-  hdel(key: string, field: HashField): void;
-  hexists(key: string, field: HashField): boolean;
+export interface HashOperations<
+  Field extends HashField = HashField,
+  Value extends Serializable = Serializable,
+> {
+  hget(key: string, field: Field): Value | null;
+  hset(key: string, field: Field, value: Value): void;
+  hsetex(key: string, field: Field, value: Value, seconds: number): void;
+  hdel(key: string, field: Field): void;
+  hexists(key: string, field: Field): boolean;
   hsize(key: string): number;
   hclear(key: string): void;
   hgetall(key: string): HashRecord;
@@ -37,7 +44,7 @@ export interface HashOperations {
 /**
  * List operations
  */
-export interface ListOperations<Value extends HashValue = HashValue> {
+export interface ListOperations<Value extends Serializable = Serializable> {
   lset(key: string, index: number, value: Value | null): void;
   lsetex(key: string, index: number, value: Value, seconds: number): void;
   lget(key: string, index: number): Value | null;
@@ -68,6 +75,9 @@ export interface IStorageParser {
   parse(value: any): Map<string, Serializable>;
 }
 
+export type ParserStringifyFn = (value: any) => string;
+export type ParserParseFn = (value: any) => Map<string, Serializable>;
+
 // ---------------------
 
 export type HashField = string | number;
@@ -85,51 +95,12 @@ export type HashRecord<
 
 // ---------------------
 
-export type ParserStringifyFn = (value: any) => string;
-export type ParserParseFn = (value: any) => Map<string, Serializable>;
-
-// ---------------------
-
-export type Class<T> = new (...args: any[]) => T;
-
-// ---------------------
-
-/**
- Matches a JSON object.
-
- This type can be useful to enforce some input to be JSON-compatible or as a super-type to be extended from. Don't use this as a direct return type as the user would have to double-cast it: `jsonObject as unknown as CustomResponse`. Instead, you could extend your CustomResponse type from it to ensure your type only uses JSON-compatible types: `interface CustomResponse extends JsonObject { … }`.
-
- @category JSON
- */
-export type JsonObject = { [Key in string]: JsonValue } & {
-  [Key in string]?: JsonValue | undefined;
-};
-
-/**
- Matches a JSON array.
-
- @category JSON
- */
-export type JsonArray = JsonValue[] | readonly JsonValue[];
-
-/**
- Matches any valid JSON primitive value.
-
- @category JSON
- */
-export type JsonPrimitive = string | number | boolean | null;
-
-/**
- Matches any valid JSON value.
-
- @see `Jsonify` if you need to transform a type to one that is assignable to `JsonValue`.
-
- @category JSON
- */
-export type JsonValue = JsonPrimitive | JsonObject | JsonArray;
-
 /** Alias to JSON-compatible values. */
-export type Serializable = JsonPrimitive | JsonArray | JsonValue | JsonObject;
+export type Serializable = JsonValue | Serializable[];
 
 /** Alias to a list of JSON-compatible values. */
 export type SerializableList = Serializable[];
+
+// ---------------------
+
+export type { JsonPrimitive, JsonArray, JsonValue, JsonObject, Jsonify, Class } from 'type-fest';
