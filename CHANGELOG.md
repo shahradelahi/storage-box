@@ -1,5 +1,14 @@
 # storage-box
 
+## 1.0.1
+
+### Patch Changes
+
+- 7f2a681: chore: Update dependencies
+- fa5ee22: fix: Type incompatibility with json/serializable types
+
+  Use `Jsonify<T>` if you need to transform a type to a JSON-compatible type
+
 ## 1.0.0
 
 ### Major Changes
