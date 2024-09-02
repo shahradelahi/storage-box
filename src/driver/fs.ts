@@ -34,12 +34,33 @@ export default class FsDriver extends MemoryDriver {
     this._encoding = opts.encoding || 'utf-8';
     this._writer = new FileWriter(this._path, { encoding: this._encoding });
 
-    this.prepare().catch((err) => {
-      throw err;
+    // Setup exit handlers
+    // https://stackoverflow.com/questions/40574218/how-to-perform-an-async-operation-on-exit
+    // https://www.npmjs.com/package/async-cleanup
+    [
+      'SIGHUP',
+      'SIGINT',
+      'SIGQUIT',
+      'SIGILL',
+      'SIGTRAP',
+      'SIGABRT',
+      'SIGBUS',
+      'SIGFPE',
+      'SIGUSR1',
+      'SIGSEGV',
+      'SIGUSR2',
+      'SIGTERM',
+    ].forEach((sig) => {
+      process.on(sig, () => {
+        this._bouncyWriteFn.clear();
+        this.write().finally(() => {
+          process.exit();
+        });
+      });
     });
 
-    process.on('beforeExit', () => {
-      this._bouncyWriteFn.flush();
+    this.prepare().catch((err) => {
+      throw err;
     });
   }
 
