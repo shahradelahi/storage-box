@@ -1,6 +1,7 @@
 import { promises } from 'node:fs';
 import { resolve } from 'node:path';
 import { expect } from 'chai';
+import { stub } from 'sinon';
 
 import { Client } from '@/client';
 import { FsDriver } from '@/node';
@@ -19,6 +20,18 @@ describe('Fs-based storage', () => {
 
   after(async () => {
     promises.unlink(filePath).catch(() => {});
+  });
+
+  it('exit handlers', () => {
+    const exitstub = stub(process, 'exit');
+    process.exit(1);
+
+    client.set('foo', 'bar');
+    expect(process.listeners('SIGHUP').length).to.be.greaterThanOrEqual(1);
+    const listener = process.listeners('SIGHUP')[0] as NodeJS.SignalsListener;
+    listener('SIGHUP');
+
+    expect(exitstub.calledWith()).to.be.true;
   });
 
   it('Set and get', () => {
