@@ -1,7 +1,7 @@
 import { promises } from 'node:fs';
 import { resolve } from 'node:path';
 import { expect } from 'chai';
-import { stub } from 'sinon';
+import { stub, spy } from 'sinon';
 
 import { Client } from '@/client';
 import { FsDriver } from '@/node';
@@ -13,17 +13,23 @@ describe('Fs-based storage', () => {
 
   const drive = new FsDriver(filePath);
   const client = new Client(drive);
+  const exitstub = stub(process, 'exit');
+  const writestub = spy(drive, "write")
+
 
   beforeEach(() => {
     client.clear();
   });
+
+  afterEach(()=>{
+    exitstub.reset()
+  })
 
   after(async () => {
     promises.unlink(filePath).catch(() => {});
   });
 
   it('exit handlers', () => {
-    const exitstub = stub(process, 'exit');
     process.exit(1);
 
     client.set('foo', 'bar');
@@ -32,6 +38,7 @@ describe('Fs-based storage', () => {
     listener('SIGHUP');
 
     expect(exitstub.calledWith()).to.be.true;
+    expect(writestub.calledWith()).to.be.true;
   });
 
   it('Set and get', () => {
