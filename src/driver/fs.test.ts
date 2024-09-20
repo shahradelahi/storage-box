@@ -1,6 +1,7 @@
 import { promises } from 'node:fs';
 import { resolve } from 'node:path';
 import { expect } from 'chai';
+import { spy, stub } from 'sinon';
 
 import { Client } from '@/client';
 import { FsDriver } from '@/node';
@@ -12,13 +13,31 @@ describe('Fs-based storage', () => {
 
   const drive = new FsDriver(filePath);
   const client = new Client(drive);
+  const exitstub = stub(process, 'exit');
+  const writestub = spy(drive, 'write');
 
   beforeEach(() => {
     client.clear();
   });
 
+  afterEach(() => {
+    exitstub.reset();
+  });
+
   after(async () => {
     promises.unlink(filePath).catch(() => {});
+  });
+
+  it('exit handlers', () => {
+    process.exit(1);
+
+    client.set('foo', 'bar');
+    expect(process.listeners('SIGHUP').length).to.be.greaterThanOrEqual(1);
+    const listener = process.listeners('SIGHUP')[0] as NodeJS.SignalsListener;
+    listener('SIGHUP');
+
+    expect(exitstub.calledWith()).to.be.true;
+    expect(writestub.calledWith()).to.be.true;
   });
 
   it('Set and get', () => {
