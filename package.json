@@ -63,7 +63,7 @@
     "@types/sinon": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "chai": "^5.1.1",
-    "eslint": "^8.57.0",
+    "eslint": "^9.0.0",
     "mocha": "^10.7.3",
     "prettier": "^3.3.3",
     "sinon": "^19.0.2",
