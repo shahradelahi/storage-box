@@ -27,7 +27,7 @@ devDependencies:
     version: 6.0.0
   '@types/chai':
     specifier: ^4.3.19
-    version: 4.3.19
+    version: 4.3.20
   '@types/mocha':
     specifier: ^10.0.7
     version: 10.0.8
@@ -976,8 +976,8 @@ packages:
     resolution: {integrity: sha512-DE427ROAphMQzU4ENbliGYrBSYPXF+TtLg9S8vzeA+OF4ZKzoDdzfL8sxuMUGS/lgRhM6j1URSk9ghf7Xo1tyA==}
     dev: true
 
-  /@types/chai@4.3.19:
-    resolution: {integrity: sha512-2hHHvQBVE2FiSK4eN0Br6snX9MtolHaTo/batnLjlGRhoQzlCL61iVpxoqO7SfFyOw+P/pwv+0zNHzKoGWz9Cw==}
+  /@types/chai@4.3.20:
+    resolution: {integrity: sha512-/pC9HAB5I/xMlc5FP77qjCnI16ChlJfW0tGa0IUcFn38VJrTV6DeZ60NU5KZBtaOZqjdpwTWohz5HU1RrhiYxQ==}
     dev: true
 
   /@types/estree@1.0.5:
