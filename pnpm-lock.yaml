@@ -10,7 +10,7 @@ dependencies:
     version: 3.0.0-beta2
   debounce:
     specifier: ^2.1.0
-    version: 2.1.1
+    version: 2.2.0
   type-fest:
     specifier: ^4.26.0
     version: 4.26.1
@@ -1433,8 +1433,8 @@ packages:
       which: 2.0.2
     dev: true
 
-  /debounce@2.1.1:
-    resolution: {integrity: sha512-+xRWxgel9LgTC4PwKlm7TJUK6B6qsEK77NaiNvXmeQ7Y3e6OVVsBC4a9BSptS/mAYceyAz37Oa8JTTuPRft7uQ==}
+  /debounce@2.2.0:
+    resolution: {integrity: sha512-Xks6RUDLZFdz8LIdR6q0MTH44k7FikOmnh5xkSjMig6ch45afc8sjTjRQf3P6ax8dMgcQrYO/AR2RGWURrruqw==}
     engines: {node: '>=18'}
     dev: false
 
