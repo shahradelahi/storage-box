@@ -49,7 +49,7 @@
   },
   "packageManager": "pnpm@8.15.9",
   "dependencies": {
-    "@msgpack/msgpack": "3.0.0-beta2",
+    "@se-oss/msgpack": "^1.0.0",
     "debounce": "^2.1.0",
     "type-fest": "^4.26.0",
     "exit-hook": "^4.0.0"

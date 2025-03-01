@@ -5,9 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@msgpack/msgpack':
-    specifier: 3.0.0-beta2
-    version: 3.0.0-beta2
+  '@se-oss/msgpack':
+    specifier: ^1.0.0
+    version: 1.0.0(@msgpack/msgpack@3.1.0)
   debounce:
     specifier: ^2.1.0
     version: 2.1.1
@@ -783,9 +783,9 @@ packages:
       read-yaml-file: 1.1.0
     dev: true
 
-  /@msgpack/msgpack@3.0.0-beta2:
-    resolution: {integrity: sha512-y+l1PNV0XDyY8sM3YtuMLK5vE3/hkfId+Do8pLo/OPxfxuFAUwcGz3oiiUuV46/aBpwTzZ+mRWVMtlSKbradhw==}
-    engines: {node: '>= 14'}
+  /@msgpack/msgpack@3.1.0:
+    resolution: {integrity: sha512-igBxaq5JHWdJ0lDyKkCo00pDu+bNVuBAs/cHra6a3ndCw6vlZK9BGLuG7Fvmar/DXK2uJ25zvgcAZEl+AvLpjQ==}
+    engines: {node: '>= 18'}
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:
@@ -943,6 +943,14 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@se-oss/msgpack@1.0.0(@msgpack/msgpack@3.1.0):
+    resolution: {integrity: sha512-fRfNKjEtejD/aekxa16MPCoungYUHYVmUIxBF5y/Nf60vbnHd05GHX7cYpD/6rlnI2BKqheEVuzJIlD+QZgqhw==}
+    peerDependencies:
+      '@msgpack/msgpack': ^3.1
+    dependencies:
+      '@msgpack/msgpack': 3.1.0
+    dev: false
 
   /@sindresorhus/tsconfig@6.0.0:
     resolution: {integrity: sha512-+fUdfuDd/7O2OZ9/UvJy76IEWn2Tpvm2l+rwUoS2Yz4jCUTSNOQQv2PLWrwekt8cPLwHmpHaBpay34bkBmVl2Q==}
