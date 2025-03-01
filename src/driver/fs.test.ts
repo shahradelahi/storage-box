@@ -1,6 +1,6 @@
 import { promises } from 'node:fs';
 import { resolve } from 'node:path';
-import { afterAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { Client } from '@/client';
 import { FsDriver } from '@/node';
@@ -17,7 +17,7 @@ describe('Fs-based storage', () => {
     client.clear();
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await promises.unlink(filePath).catch(() => {});
   });
 
@@ -33,58 +33,50 @@ describe('Fs-based storage', () => {
     expect(client.get('foo')).to.be.null;
   });
 
-  describe('Time-based', () => {
-    const filePath = resolve('tests', 'output', 'test.json');
+  it('create a key with expiration and reload again', async () => {
+    {
+      const drive = new FsDriver(filePath);
+      const client = new Client(drive);
 
-    afterAll(async () => {
-      await promises.unlink(filePath).catch(() => {});
-    });
+      client.setex('foo', 'bar', 2);
+    }
+    await sleep(2001);
+    {
+      const drive = new FsDriver(filePath);
+      const client = new Client(drive);
 
-    it('create a key with expiration and reload again', async () => {
-      {
-        const drive = new FsDriver(filePath);
-        const client = new Client(drive);
+      expect(client.exists('foo')).to.false;
+    }
+  });
+});
 
-        client.setex('foo', 'bar', 2);
-      }
-      await sleep(2001);
-      {
-        const drive = new FsDriver(filePath);
-        const client = new Client(drive);
+describe('Fs-storage with MSGPack Parser', () => {
+  const filePath = resolve('tests', 'output', 'test.b64');
 
-        expect(client.exists('foo')).to.false;
-      }
-    });
+  const drive = new FsDriver(filePath, { parser: MSGPack });
+  const client = new Client(drive);
+
+  beforeEach(() => {
+    client.clear();
   });
 
-  describe('MSGPack Parser', () => {
-    const filePath = resolve('tests', 'output', 'test.b64');
+  afterEach(async () => {
+    await promises.unlink(filePath).catch(() => {});
+  });
 
-    const drive = new FsDriver(filePath, { parser: MSGPack });
-    const client = new Client(drive);
+  it('Set and get', () => {
+    client.set('foo', 'bar');
+    client.set('bar', 'baz');
+    expect(client.get('foo')).to.equal('bar');
+  });
 
-    beforeEach(() => {
-      client.clear();
-    });
+  it('Delete', () => {
+    client.setex('foo', 'bar', 1);
+    client.setex('bar', 'baz', 1);
+    client.set('foo', 'bar');
 
-    afterAll(async () => {
-      await promises.unlink(filePath).catch(() => {});
-    });
+    client.del('foo');
 
-    it('Set and get', () => {
-      client.set('foo', 'bar');
-      client.set('bar', 'baz');
-      expect(client.get('foo')).to.equal('bar');
-    });
-
-    it('Delete', () => {
-      client.setex('foo', 'bar', 1);
-      client.setex('bar', 'baz', 1);
-      client.set('foo', 'bar');
-
-      client.del('foo');
-
-      expect(client.get('foo')).to.be.null;
-    });
+    expect(client.get('foo')).to.be.null;
   });
 });
