@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import process from 'node:process';
 import debounce, { type DebouncedFunction } from 'debounce';
+import exitHook from 'exit-hook';
 
 import { JsonMap, MemoryDriver } from '@/index';
 import type { IStorageParser, Serializable } from '@/typings';
@@ -42,29 +42,9 @@ export default class FsDriver extends MemoryDriver {
     this._encoding = opts.encoding || 'utf-8';
     this._writer = new FileWriter(this._path, { encoding: this._encoding });
 
-    // Setup exit handlers
-    // https://stackoverflow.com/questions/40574218/how-to-perform-an-async-operation-on-exit
-    // https://www.npmjs.com/package/async-cleanup
-    [
-      'SIGHUP',
-      'SIGINT',
-      'SIGQUIT',
-      'SIGILL',
-      'SIGTRAP',
-      'SIGABRT',
-      'SIGBUS',
-      'SIGFPE',
-      'SIGUSR1',
-      'SIGSEGV',
-      'SIGUSR2',
-      'SIGTERM',
-    ].forEach((sig) => {
-      process.on(sig, () => {
-        this._bouncyWriteFn.clear();
-        this.write().finally(() => {
-          process.exit();
-        });
-      });
+    exitHook(() => {
+      this._bouncyWriteFn.clear();
+      this.write();
     });
 
     // Try to create a recursive
