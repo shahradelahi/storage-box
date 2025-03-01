@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { describe, expect, it } from 'vitest';
 
 import { Client } from '@/client';
 import { HashMap } from '@/hash-map';

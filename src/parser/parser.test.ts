@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { describe, expect, it } from 'vitest';
 
 import { JsonMap } from '@/parser/json-map';
 import { MSGPack } from '@/parser/msg-pack';

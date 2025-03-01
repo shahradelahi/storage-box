@@ -1,6 +1,6 @@
 import { promises } from 'node:fs';
 import { resolve } from 'node:path';
-import { expect } from 'chai';
+import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { Client } from '@/client';
 import { FsDriver } from '@/node';
@@ -17,8 +17,8 @@ describe('Fs-based storage', () => {
     client.clear();
   });
 
-  after(async () => {
-    promises.unlink(filePath).catch(() => {});
+  afterAll(async () => {
+    await promises.unlink(filePath).catch(() => {});
   });
 
   it('Set and get', () => {
@@ -36,7 +36,7 @@ describe('Fs-based storage', () => {
   describe('Time-based', () => {
     const filePath = resolve('tests', 'output', 'test.json');
 
-    after(async () => {
+    afterAll(async () => {
       await promises.unlink(filePath).catch(() => {});
     });
 
@@ -67,7 +67,7 @@ describe('Fs-based storage', () => {
       client.clear();
     });
 
-    after(async () => {
+    afterAll(async () => {
       await promises.unlink(filePath).catch(() => {});
     });
 
