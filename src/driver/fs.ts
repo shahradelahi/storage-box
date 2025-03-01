@@ -1,7 +1,7 @@
-import { mkdirSync, promises } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import process from 'node:process';
 import debounce, { type DebouncedFunction } from 'debounce';
+import exitHook from 'exit-hook';
 
 import { JsonMap, MemoryDriver } from '@/index';
 import type { IStorageParser, Serializable } from '@/typings';
@@ -10,8 +10,16 @@ import { access } from '@/utils/fs-extra';
 
 export interface FsOptions {
   parser?: IStorageParser;
-  /** Encoding for the file. (default `utf-8`) */
+
+  /**
+   * The encoding to use when writing to the file.
+   * @default UTF-8
+   */
   encoding?: BufferEncoding;
+
+  /**
+   * @default 100
+   */
   debounceTime?: number;
 }
 
@@ -34,37 +42,11 @@ export default class FsDriver extends MemoryDriver {
     this._encoding = opts.encoding || 'utf-8';
     this._writer = new FileWriter(this._path, { encoding: this._encoding });
 
-    // Setup exit handlers
-    // https://stackoverflow.com/questions/40574218/how-to-perform-an-async-operation-on-exit
-    // https://www.npmjs.com/package/async-cleanup
-    [
-      'SIGHUP',
-      'SIGINT',
-      'SIGQUIT',
-      'SIGILL',
-      'SIGTRAP',
-      'SIGABRT',
-      'SIGBUS',
-      'SIGFPE',
-      'SIGUSR1',
-      'SIGSEGV',
-      'SIGUSR2',
-      'SIGTERM',
-    ].forEach((sig) => {
-      process.on(sig, () => {
-        this._bouncyWriteFn.clear();
-        this.write().finally(() => {
-          process.exit();
-        });
-      });
+    exitHook(() => {
+      this._bouncyWriteFn.clear();
+      this.write();
     });
 
-    this.prepare().catch((err) => {
-      throw err;
-    });
-  }
-
-  async prepare() {
     // Try to create a recursive
     const fileDir = dirname(this._path);
     if (!access(fileDir)) {
@@ -72,17 +54,13 @@ export default class FsDriver extends MemoryDriver {
     }
 
     if (access(this._path)) {
-      const rawData = await promises.readFile(this._path, this._encoding);
+      const rawData = readFileSync(this._path, this._encoding);
       const parser = this._parser;
 
       const _storage = rawData === '' ? new Map<string, Serializable>() : parser.parse(rawData);
 
       _storage.forEach((val, key) => {
-        // If the data was in the memory it means it was changed before load time.
-        // do NOT load the that are changed
-        if (!(key in this._storage)) {
-          this._storage[key] = val;
-        }
+        this._storage[key] = val;
       });
     }
   }
