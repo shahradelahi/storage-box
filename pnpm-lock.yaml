@@ -29,8 +29,8 @@ devDependencies:
     specifier: ^6.0.0
     version: 6.0.0
   '@types/chai':
-    specifier: ^4.3.19
-    version: 4.3.19
+    specifier: ^5.0.0
+    version: 5.0.1
   '@types/mocha':
     specifier: ^10.0.7
     version: 10.0.8
@@ -949,8 +949,14 @@ packages:
     engines: {node: '>=18'}
     dev: true
 
-  /@types/chai@4.3.19:
-    resolution: {integrity: sha512-2hHHvQBVE2FiSK4eN0Br6snX9MtolHaTo/batnLjlGRhoQzlCL61iVpxoqO7SfFyOw+P/pwv+0zNHzKoGWz9Cw==}
+  /@types/chai@5.0.1:
+    resolution: {integrity: sha512-5T8ajsg3M/FOncpLYW7sdOcD6yf4+722sze/tc4KQV0P8Z2rAr3SAuHCIkYmYpt8VbcQlnz8SxlOlPQYefe4cA==}
+    dependencies:
+      '@types/deep-eql': 4.0.2
+    dev: true
+
+  /@types/deep-eql@4.0.2:
+    resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
     dev: true
 
   /@types/estree@1.0.5:
