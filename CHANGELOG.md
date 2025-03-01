@@ -1,5 +1,12 @@
 # storage-box
 
+## 1.0.3
+
+### Patch Changes
+
+- 6b8a2d4: refactor: Using `@se-oss/msgpack` package in `MSGPack` parser
+- 1be7dc7: refactor: `FsDriver` to synchronously initialize storage
+
 ## 1.0.2
 
 ### Patch Changes
