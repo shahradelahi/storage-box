@@ -7,7 +7,7 @@ settings:
 dependencies:
   '@se-oss/msgpack':
     specifier: ^1.0.0
-    version: 1.0.0(@msgpack/msgpack@3.1.0)
+    version: 1.0.0(@msgpack/msgpack@3.1.3)
   debounce:
     specifier: ^2.1.0
     version: 2.1.1
@@ -24,7 +24,7 @@ devDependencies:
     version: 2.27.8
   '@ianvs/prettier-plugin-sort-imports':
     specifier: ^4.3.1
-    version: 4.3.1(prettier@3.3.3)
+    version: 4.3.1(prettier@3.9.6)
   '@sindresorhus/tsconfig':
     specifier: ^6.0.0
     version: 6.0.0
@@ -39,7 +39,7 @@ devDependencies:
     version: 8.57.1
   prettier:
     specifier: ^3.3.3
-    version: 3.3.3
+    version: 3.9.6
   tsup:
     specifier: ^8.2.4
     version: 8.3.0(typescript@5.6.2)
@@ -914,7 +914,7 @@ packages:
     deprecated: Use @eslint/object-schema instead
     dev: true
 
-  /@ianvs/prettier-plugin-sort-imports@4.3.1(prettier@3.3.3):
+  /@ianvs/prettier-plugin-sort-imports@4.3.1(prettier@3.9.6):
     resolution: {integrity: sha512-ZHwbyjkANZOjaBm3ZosADD2OUYGFzQGxfy67HmGZU94mHqe7g1LCMA7YYKB1Cq+UTPCBqlAYapY0KXAjKEw8Sg==}
     peerDependencies:
       '@vue/compiler-sfc': 2.7.x || 3.x
@@ -928,7 +928,7 @@ packages:
       '@babel/parser': 7.25.6
       '@babel/traverse': 7.25.6
       '@babel/types': 7.25.6
-      prettier: 3.3.3
+      prettier: 3.9.6
       semver: 7.6.3
     transitivePeerDependencies:
       - supports-color
@@ -996,8 +996,8 @@ packages:
       read-yaml-file: 1.1.0
     dev: true
 
-  /@msgpack/msgpack@3.1.0:
-    resolution: {integrity: sha512-igBxaq5JHWdJ0lDyKkCo00pDu+bNVuBAs/cHra6a3ndCw6vlZK9BGLuG7Fvmar/DXK2uJ25zvgcAZEl+AvLpjQ==}
+  /@msgpack/msgpack@3.1.3:
+    resolution: {integrity: sha512-47XIizs9XZXvuJgoaJUIE2lFoID8ugvc0jzSHP+Ptfk8nTbnR8g788wv48N03Kx0UkAv559HWRQ3yzOgzlRNUA==}
     engines: {node: '>= 18'}
     dev: false
 
@@ -1309,12 +1309,12 @@ packages:
     dev: true
     optional: true
 
-  /@se-oss/msgpack@1.0.0(@msgpack/msgpack@3.1.0):
+  /@se-oss/msgpack@1.0.0(@msgpack/msgpack@3.1.3):
     resolution: {integrity: sha512-fRfNKjEtejD/aekxa16MPCoungYUHYVmUIxBF5y/Nf60vbnHd05GHX7cYpD/6rlnI2BKqheEVuzJIlD+QZgqhw==}
     peerDependencies:
       '@msgpack/msgpack': ^3.1
     dependencies:
-      '@msgpack/msgpack': 3.1.0
+      '@msgpack/msgpack': 3.1.3
     dev: false
 
   /@sindresorhus/tsconfig@6.0.0:
@@ -1385,7 +1385,7 @@ packages:
       '@typescript-eslint/types': 7.18.0
       '@typescript-eslint/typescript-estree': 7.18.0(typescript@5.6.2)
       '@typescript-eslint/visitor-keys': 7.18.0
-      debug: 4.4.0
+      debug: 4.4.3
       eslint: 8.57.1
       typescript: 5.6.2
     transitivePeerDependencies:
@@ -1828,6 +1828,18 @@ packages:
 
   /debug@4.4.0:
     resolution: {integrity: sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+    dependencies:
+      ms: 2.1.3
+    dev: true
+
+  /debug@4.4.3:
+    resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
     engines: {node: '>=6.0'}
     peerDependencies:
       supports-color: '*'
@@ -2870,8 +2882,8 @@ packages:
     hasBin: true
     dev: true
 
-  /prettier@3.3.3:
-    resolution: {integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==}
+  /prettier@3.9.6:
+    resolution: {integrity: sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g==}
     engines: {node: '>=14'}
     hasBin: true
     dev: true
