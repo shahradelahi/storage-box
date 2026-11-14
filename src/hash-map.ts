@@ -1,9 +1,10 @@
 import { Client } from '@/client';
 import type { HashField, HashRecord, HashValue, KVOperations } from '@/typings';
 
-export class HashMap<Key extends HashField = HashField, Value extends HashValue = HashValue>
-  implements KVOperations<Key, Value>
-{
+export class HashMap<
+  Key extends HashField = HashField,
+  Value extends HashValue = HashValue,
+> implements KVOperations<Key, Value> {
   constructor(
     private readonly _client: Client,
     private readonly _key: string

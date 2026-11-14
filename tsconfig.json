@@ -1,11 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "@sindresorhus/tsconfig",
+  "extends": "@shahrad/tsconfig",
   "compilerOptions": {
     "moduleResolution": "node",
     "module": "ESNext",
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
+    "types": ["@types/node"],
     "paths": {
       "@/*": ["./src/*"],
       "@/tests/*": ["./tests/*"]

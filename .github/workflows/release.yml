@@ -10,21 +10,23 @@ jobs:
     if: github.repository == 'shahradelahi/storage-box'
     name: Build & Publish Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Use PNPM v8
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Use PNPM
+        uses: pnpm/action-setup@v6
 
-      - name: Use Node v18
-        uses: actions/setup-node@v4
+      - name: Use Node v26
+        uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 26
           cache: pnpm
 
       - name: Install dependencies
@@ -40,3 +42,4 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true

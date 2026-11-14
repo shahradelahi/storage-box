@@ -8,8 +8,7 @@ export interface MemoryDriverOptions<Key extends HashField, Value extends HashVa
 export default class MemoryDriver<
   Key extends HashField = HashField,
   Value extends HashValue = HashValue,
-> implements StorageDriver<Key, Value>
-{
+> implements StorageDriver<Key, Value> {
   protected _storage: HashRecord<Key, Value> = Object.create(null) as HashRecord<Key, Value>;
 
   constructor(options: MemoryDriverOptions<Key, Value> = {}) {

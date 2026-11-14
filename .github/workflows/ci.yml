@@ -14,13 +14,11 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
         with:
-          version: 8
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
+          node-version: 26
           cache: 'pnpm'
 
       - run: pnpm install --frozen-lockfile
@@ -29,32 +27,24 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
         with:
-          version: 8
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
+          node-version: 26
           cache: 'pnpm'
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
 
-  tests:
+  test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18, 20, 22]
-    name: node ${{ matrix.node-version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
         with:
-          version: 8
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 26
           cache: 'pnpm'
 
       - run: pnpm install --frozen-lockfile
