@@ -14,6 +14,11 @@ export { MSGPack } from '@/parser/msg-pack';
 
 // -----------
 
+/**
+ * Checks if a value is a valid Base64 encoded string.
+ * @example
+ * isBase64('SGVsbG8='); // true
+ */
 export function isBase64(data: any): boolean {
   return (
     typeof data === 'string' &&
