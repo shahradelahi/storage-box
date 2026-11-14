@@ -1,5 +1,13 @@
 # storage-box
 
+## 1.0.4
+
+### Patch Changes
+
+- bcaed70: Add JSDoc annotations across parser and utility functions, and consolidate driver documentation into the README.
+- bcaed70: Update project dependencies, TypeScript configuration, ESLint/Prettier configs, and CI workflows to support Node 26.
+- 9d674bc: Fix TTL timer cancellation on key/field writes and list index shifting, filter internal TTL keys from listings, and prevent prototype property lookups.
+
 ## 1.0.3
 
 ### Patch Changes
