@@ -1,4 +1,5 @@
 import { HashField, HashRecord, HashValue, StorageDriver } from '@/index';
+import { defineOwn, hasOwn } from '@/utils/object';
 
 export interface MemoryDriverOptions<Key extends HashField, Value extends HashValue> {
   initialValue?: HashRecord<Key, Value>;
@@ -9,11 +10,13 @@ export default class MemoryDriver<
   Value extends HashValue = HashValue,
 > implements StorageDriver<Key, Value>
 {
-  protected _storage: HashRecord<Key, Value> = {} as HashRecord<Key, Value>;
+  protected _storage: HashRecord<Key, Value> = Object.create(null) as HashRecord<Key, Value>;
 
   constructor(options: MemoryDriverOptions<Key, Value> = {}) {
     if (options.initialValue) {
-      Object.assign(this._storage, options.initialValue);
+      for (const [key, value] of Object.entries(options.initialValue)) {
+        defineOwn(this._storage, key, value);
+      }
     }
   }
 
@@ -26,7 +29,7 @@ export default class MemoryDriver<
   }
 
   set(key: Key, value: Value) {
-    this._storage[key] = value;
+    defineOwn(this._storage, key, value);
   }
 
   del(key: Key) {
@@ -37,7 +40,7 @@ export default class MemoryDriver<
   }
 
   exists(key: Key) {
-    return key in this._storage;
+    return hasOwn(this._storage, key);
   }
 
   keys(): Key[] {
@@ -49,6 +52,6 @@ export default class MemoryDriver<
   }
 
   clear() {
-    this._storage = {} as HashRecord<Key, Value>;
+    this._storage = Object.create(null) as HashRecord<Key, Value>;
   }
 }
