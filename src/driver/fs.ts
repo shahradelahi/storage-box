@@ -7,6 +7,7 @@ import { JsonMap, MemoryDriver } from '@/index';
 import type { IStorageParser, Serializable } from '@/typings';
 import { FileWriter } from '@/utils/file-writer';
 import { access } from '@/utils/fs-extra';
+import { defineOwn } from '@/utils/object';
 
 export interface FsOptions {
   parser?: IStorageParser;
@@ -60,7 +61,7 @@ export default class FsDriver extends MemoryDriver {
       const _storage = rawData === '' ? new Map<string, Serializable>() : parser.parse(rawData);
 
       _storage.forEach((val, key) => {
-        this._storage[key] = val;
+        defineOwn(this._storage, key, val);
       });
     }
   }

@@ -1,3 +1,16 @@
+export function hasOwn(obj: object, key: PropertyKey): boolean {
+  return Object.prototype.hasOwnProperty.call(obj, key);
+}
+
+export function defineOwn<T extends object>(obj: T, key: PropertyKey, value: unknown): void {
+  Object.defineProperty(obj, key, {
+    value,
+    enumerable: true,
+    writable: true,
+    configurable: true,
+  });
+}
+
 export function toMap<T extends string | number | symbol = any, U = any>(
   object: Record<T, U> | object
 ): Map<T, U> {
@@ -11,25 +24,23 @@ export function toMap<T extends string | number | symbol = any, U = any>(
 export function fromMap<T extends string | number | symbol, U>(map: Map<T, U>): Record<T, U> {
   const record = {} as Record<T, U>;
   map.forEach((value, key) => {
-    record[key] = value;
+    defineOwn(record, key, value);
   });
   return record;
 }
 
 export function removeUndefined<T extends object>(obj: T): T {
   const result = {} as T;
-  for (const key in obj) {
-    const value = obj[key];
+  for (const [key, value] of Object.entries(obj)) {
     if (value !== undefined) {
-      result[key] = value;
+      defineOwn(result, key, value);
     }
   }
   return result;
 }
 
 export function toPlainObject<T extends object>(obj: T): T {
-  const newObj = {} as T;
-  if (typeof obj !== 'object') {
+  if (typeof obj !== 'object' || obj === null) {
     throw new TypeError('Cannot convert ' + typeof obj + ' to object');
   }
 
@@ -37,12 +48,9 @@ export function toPlainObject<T extends object>(obj: T): T {
     return fromMap(obj);
   }
 
+  const newObj = {} as T;
   for (const [key, value] of Object.entries(obj)) {
-    Object.defineProperty(newObj, key, {
-      value,
-      enumerable: true,
-      configurable: true,
-    });
+    defineOwn(newObj, key, value);
   }
 
   return newObj;
