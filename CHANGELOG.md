@@ -1,5 +1,11 @@
 # storage-box
 
+## 1.0.4
+
+### Patch Changes
+
+- 9d674bc: Fix TTL timer cancellation on key/field writes and list index shifting, filter internal TTL keys from listings, and prevent prototype property lookups.
+
 ## 1.0.3
 
 ### Patch Changes
