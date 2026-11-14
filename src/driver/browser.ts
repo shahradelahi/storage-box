@@ -6,9 +6,10 @@ export interface BrowserDriverOptions {
   initialValue?: HashRecord<string, string>;
 }
 
-export default class BrowserDriver<Key extends string = string, Value extends string = string>
-  implements StorageDriver<Key, Value>
-{
+export default class BrowserDriver<
+  Key extends string = string,
+  Value extends string = string,
+> implements StorageDriver<Key, Value> {
   protected readonly _storage: Storage;
 
   constructor(type: StorageType, opts: BrowserDriverOptions = {}) {

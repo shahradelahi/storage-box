@@ -6,8 +6,8 @@ On this page, you can find a detailed description of how to use file-based drive
 
 ```typescript
 import { resovle } from 'node:path';
-import { Client } from 'storage-box';
 import { FsDriver } from 'storage-box/node';
+import { Client } from 'storage-box';
 
 const filePath = resovle(process.cwd(), 'data.json');
 const driver = new FsDriver(filePath);

@@ -1,9 +1,9 @@
 import { promises } from 'node:fs';
 import { resolve } from 'node:path';
+import { FsDriver } from '@/node';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { Client } from '@/client';
-import { FsDriver } from '@/node';
 import { MSGPack } from '@/parser/msg-pack';
 import { sleep } from '@/tests/utils';
 
