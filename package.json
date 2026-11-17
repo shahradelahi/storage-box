@@ -76,7 +76,7 @@
     "@changesets/cli": "^2.27.7",
     "@shahrad/eslint-config": "^1.1.0",
     "@shahrad/prettier-config": "^1.2.2",
-    "@shahrad/tsconfig": "^1.3.0",
+    "@shahrad/tsconfig": "^2.0.0",
     "@types/node": "^25.9.9",
     "eslint": "^10.14.0",
     "globals": "^17.14.0",
